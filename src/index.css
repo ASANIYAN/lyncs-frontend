@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -94,7 +96,7 @@
 
   --sidebar-border: oklch(0.922 0 0);
 
-  --sidebar-ring: oklch(0.708 0 0)
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -212,7 +214,7 @@ code {
 }
 
 @theme inline {
-  --font-sans: 'Geist Variable', sans-serif;
+  --font-sans: "Geist Variable", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -253,10 +255,65 @@ code {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;}
-  body {
-    @apply bg-background text-foreground;}
-  html {
-    @apply font-sans;}}
+@theme {
+  /* Typography scale */
+  --text-xi: 11px;
+  --text-xii: 12px;
+  --text-xiii: 13px;
+  --text-xiv: 14px;
+  --text-xv: 15px;
+  --text-xxii: 22px;
+
+  /* Font families */
+  --font-geist: "Geist", -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Border radius */
+  --radius-xs: 5px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+
+  /* Core backgrounds */
+  --color-lyncs-bg: #0d0d0d;
+  --color-lyncs-surface: #111111;
+  --color-lyncs-card: #161616;
+  --color-lyncs-card-hover: #141414;
+  --color-lyncs-elevated: #1a1a1a;
+  --color-lyncs-overlay: #1f1f1f;
+
+  /* Borders */
+  --color-lyncs-border: #252525;
+  --color-lyncs-border-hover: #333333;
+  --color-lyncs-border-strong: #404040;
+
+  /* Text */
+  --color-lyncs-text: #ededed;
+  --color-lyncs-text-muted: #888888;
+  --color-lyncs-text-subtle: #aaaaaa;
+  --color-lyncs-text-faint: #555555;
+
+  /* Accent — green */
+  --color-lyncs-accent: #3ecf8e;
+  --color-lyncs-accent-hover: #33b87a;
+  --color-lyncs-accent-dim: #1a3d2e;
+  --color-lyncs-accent-border: #1a4d30;
+
+  /* Semantic — danger */
+  --color-lyncs-danger: #f85149;
+  --color-lyncs-danger-dim: #2d1010;
+  --color-lyncs-danger-border: #5c1a1a;
+
+  /* Semantic — warning */
+  --color-lyncs-warning: #f0a500;
+  --color-lyncs-warning-dim: #2a1e00;
+
+  /* Semantic — info */
+  --color-lyncs-info: #3b82f6;
+  --color-lyncs-info-dim: #0f1a2e;
+
+  /* Semantic — success (alias of accent) */
+  --color-lyncs-success: #3ecf8e;
+  --color-lyncs-success-dim: #1a3d2e;
+}
