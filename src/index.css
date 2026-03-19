@@ -257,10 +257,9 @@ code {
 
 @theme {
   /* Typography scale */
+  --text-x: 10px;
   --text-xi: 11px;
-  --text-xii: 12px;
   --text-xiii: 13px;
-  --text-xiv: 14px;
   --text-xv: 15px;
   --text-xxii: 22px;
 

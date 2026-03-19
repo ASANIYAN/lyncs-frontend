@@ -30,7 +30,7 @@ const Login = () => {
             <LoginForm />
           </section>
 
-          <p className="text-center text-xii text-lyncs-text-muted mt-5">
+          <p className="text-center text-xs text-lyncs-text-muted pt-4">
             Don&apos;t have an account?{" "}
             <Link
               to="/signup"

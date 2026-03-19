@@ -24,7 +24,8 @@ const lyncsBadgeVariants = cva("inline-flex items-center justify-center", {
 });
 
 interface LyncsBadgeProps
-  extends Omit<React.ComponentProps<typeof Badge>, "variant">,
+  extends
+    Omit<React.ComponentProps<typeof Badge>, "variant">,
     VariantProps<typeof lyncsBadgeVariants> {
   className?: string;
 }
@@ -48,7 +49,7 @@ const ShortCodePill = ({ code, className, ...props }: ShortCodePillProps) => {
     <span
       data-slot="short-code-pill"
       className={cn(
-        "font-mono text-xii text-lyncs-accent bg-lyncs-accent-dim px-2 py-0.5 rounded-xs",
+        "font-mono text-xs text-lyncs-accent bg-lyncs-accent-dim px-2 py-0.5 rounded-xs",
         className,
       )}
       {...props}

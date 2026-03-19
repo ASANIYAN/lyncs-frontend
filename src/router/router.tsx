@@ -19,7 +19,11 @@ import Login from "@/modules/auth/views/login";
 // Unprotected routes
 const unprotectedRoutes: RouteObject[] = [
   {
-    path: "/",
+    index: true,
+    element: <Signup />,
+  },
+  {
+    path: "/signup",
     element: <Signup />,
   },
   {

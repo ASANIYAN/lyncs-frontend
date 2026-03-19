@@ -56,8 +56,7 @@ type DataTableProps<TData, TValue> = {
 };
 
 function SortIcon({ sorted }: { sorted: false | "asc" | "desc" }) {
-  if (sorted === "asc")
-    return <ArrowUp className="size-3 text-lyncs-accent" />;
+  if (sorted === "asc") return <ArrowUp className="size-3 text-lyncs-accent" />;
   if (sorted === "desc")
     return <ArrowDown className="size-3 text-lyncs-accent" />;
   return (
@@ -106,7 +105,7 @@ function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-5 py-3 border-t border-lyncs-border">
       {/* Row count */}
-      <span className="text-xii text-lyncs-text-muted tabular-nums select-none">
+      <span className="text-xs text-lyncs-text-muted tabular-nums select-none">
         {totalRows === 0 ? "0 results" : `${from}–${to} of ${totalRows}`}
       </span>
 
@@ -137,7 +136,7 @@ function DataTablePagination<TData>({
         </CustomButton>
 
         {/* Page indicator */}
-        <span className="text-xii text-lyncs-text-muted px-2 tabular-nums select-none min-w-16 text-center">
+        <span className="text-xs text-lyncs-text-muted px-2 tabular-nums select-none min-w-16 text-center">
           {table.getPageCount() === 0
             ? "—"
             : `${pageIndex + 1} / ${table.getPageCount()}`}
@@ -249,9 +248,7 @@ export function DataTable<TData, TValue>({
           >
             <div className="flex flex-col items-center gap-2.5">
               <Loader2 className="size-5 animate-spin text-lyncs-accent" />
-              <span className="text-xii text-lyncs-text-muted">
-                Loading…
-              </span>
+              <span className="text-xs text-lyncs-text-muted">Loading…</span>
             </div>
           </div>
         )}
@@ -374,9 +371,7 @@ export function DataTable<TData, TValue>({
 
       {/* Optional footer slot */}
       {footer && (
-        <div className="px-5 py-3.5 border-t border-lyncs-border">
-          {footer}
-        </div>
+        <div className="px-5 py-3.5 border-t border-lyncs-border">{footer}</div>
       )}
     </section>
   );

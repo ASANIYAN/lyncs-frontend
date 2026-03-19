@@ -1,38 +1,38 @@
-import * as React from "react"
-import { Controller, type Control, type FieldValues, type Path } from "react-hook-form"
-import { Eye, EyeOff } from "lucide-react"
-
+import * as React from "react";
 import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "../ui/field"
-import { Input } from "../ui/input"
-import { cn } from "@/lib/utils"
+  Controller,
+  type Control,
+  type FieldValues,
+  type Path,
+} from "react-hook-form";
+import { Eye, EyeOff } from "lucide-react";
+
+import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
+import { cn } from "@/lib/utils";
 
 interface CustomInputProps<TFieldValues extends FieldValues> {
-  control: Control<TFieldValues>
-  name: Path<TFieldValues>
-  label?: string
-  placeholder?: string
-  disabled?: boolean
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-  containerClassName?: string
-  labelClassName?: string
-  inputClassName?: string
-  errorClassName?: string
-  description?: string
-  type?: string
-  error?: string
-  requiredMark?: boolean
-  onFocus?: React.FocusEventHandler<HTMLInputElement>
-  onBlur?: React.FocusEventHandler<HTMLInputElement>
+  control: Control<TFieldValues>;
+  name: Path<TFieldValues>;
+  label?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  containerClassName?: string;
+  labelClassName?: string;
+  inputClassName?: string;
+  errorClassName?: string;
+  description?: string;
+  type?: string;
+  error?: string;
+  requiredMark?: boolean;
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
 }
 
 const CustomInput = <TFieldValues extends FieldValues>(
-  props: CustomInputProps<TFieldValues>
+  props: CustomInputProps<TFieldValues>,
 ) => {
   const {
     control,
@@ -52,34 +52,38 @@ const CustomInput = <TFieldValues extends FieldValues>(
     requiredMark = false,
     onFocus,
     onBlur,
-  } = props
+  } = props;
 
-  const [isFocused, setIsFocused] = React.useState(false)
+  const [isFocused, setIsFocused] = React.useState(false);
 
   return (
     <Controller
       control={control}
       name={name}
       render={({ field, fieldState }) => {
-        const errorMessage = error ?? fieldState.error?.message
-        const hasError = Boolean(errorMessage)
+        const errorMessage = error ?? fieldState.error?.message;
+        const hasError = Boolean(errorMessage);
 
-        const handleFocus: React.FocusEventHandler<HTMLInputElement> = (event) => {
-          setIsFocused(true)
-          onFocus?.(event)
-        }
+        const handleFocus: React.FocusEventHandler<HTMLInputElement> = (
+          event,
+        ) => {
+          setIsFocused(true);
+          onFocus?.(event);
+        };
 
-        const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
-          setIsFocused(false)
-          field.onBlur()
-          onBlur?.(event)
-        }
+        const handleBlur: React.FocusEventHandler<HTMLInputElement> = (
+          event,
+        ) => {
+          setIsFocused(false);
+          field.onBlur();
+          onBlur?.(event);
+        };
 
         const iconClassName = cn(
           "text-lyncs-text-muted",
           isFocused && "text-lyncs-accent",
-          hasError && "text-lyncs-danger"
-        )
+          hasError && "text-lyncs-danger",
+        );
 
         return (
           <Field
@@ -92,8 +96,8 @@ const CustomInput = <TFieldValues extends FieldValues>(
               <FieldLabel
                 data-slot="custom-input-label"
                 className={cn(
-                  "text-[10.5px] font-bold text-lyncs-text-muted uppercase tracking-[0.5px]",
-                  labelClassName
+                  "text-[10.5px] font-bold text-lyncs-text-muted uppercase tracking-[0.5px] -mb-1",
+                  labelClassName,
                 )}
               >
                 {label}
@@ -111,8 +115,7 @@ const CustomInput = <TFieldValues extends FieldValues>(
                   "bg-lyncs-elevated border-lyncs-accent shadow-[0_0_0_3px_var(--color-lyncs-accent-dim)]",
                 hasError &&
                   "bg-lyncs-card border-2 border-lyncs-danger shadow-[0_0_0_3px_var(--color-lyncs-danger-dim)]",
-                disabled &&
-                  "opacity-50 cursor-not-allowed bg-lyncs-surface"
+                disabled && "opacity-50 cursor-not-allowed bg-lyncs-surface",
               )}
             >
               {leftIcon && (
@@ -131,7 +134,7 @@ const CustomInput = <TFieldValues extends FieldValues>(
                 onBlur={handleBlur}
                 className={cn(
                   "h-auto border-none bg-transparent px-0 py-0 text-[13.5px] text-lyncs-text placeholder:text-lyncs-text-faint focus-visible:ring-0",
-                  inputClassName
+                  inputClassName,
                 )}
               />
               {rightIcon && (
@@ -141,28 +144,33 @@ const CustomInput = <TFieldValues extends FieldValues>(
               )}
             </div>
             {description && (
-              <FieldDescription className="text-[12px] text-lyncs-text-muted">
+              <FieldDescription className="text-xs text-lyncs-text-muted">
                 {description}
               </FieldDescription>
             )}
             <FieldError
               errors={errorMessage ? [{ message: errorMessage }] : undefined}
-              className={cn("text-[11px] text-lyncs-danger", errorClassName)}
+              className={cn(
+                "text-xs text-lyncs-danger text-left",
+                errorClassName,
+              )}
             />
           </Field>
-        )
+        );
       }}
     />
-  )
-}
+  );
+};
 
-interface CustomPasswordInputProps<TFieldValues extends FieldValues>
-  extends Omit<CustomInputProps<TFieldValues>, "type" | "rightIcon"> {}
+type CustomPasswordInputProps<TFieldValues extends FieldValues> = Omit<
+  CustomInputProps<TFieldValues>,
+  "type" | "rightIcon"
+>;
 
 const CustomPasswordInput = <TFieldValues extends FieldValues>(
-  props: CustomPasswordInputProps<TFieldValues>
+  props: CustomPasswordInputProps<TFieldValues>,
 ) => {
-  const [showPassword, setShowPassword] = React.useState(false)
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const toggleIcon = (
     <button
@@ -171,9 +179,13 @@ const CustomPasswordInput = <TFieldValues extends FieldValues>(
       className="text-inherit"
       aria-label={showPassword ? "Hide password" : "Show password"}
     >
-      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+      {showPassword ? (
+        <EyeOff className="size-4" />
+      ) : (
+        <Eye className="size-4" />
+      )}
     </button>
-  )
+  );
 
   return (
     <CustomInput
@@ -181,7 +193,7 @@ const CustomPasswordInput = <TFieldValues extends FieldValues>(
       type={showPassword ? "text" : "password"}
       rightIcon={toggleIcon}
     />
-  )
-}
+  );
+};
 
-export { CustomInput, CustomPasswordInput }
+export { CustomInput, CustomPasswordInput };

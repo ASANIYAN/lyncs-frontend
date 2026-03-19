@@ -81,7 +81,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
           Forgot password?
         </a>
       </div>
-      <CustomButton type="submit" variant="primary" fullWidth className="mt-1">
+      <CustomButton
+        type="submit"
+        variant="primary"
+        fullWidth
+        size={"lg"}
+        className="mt-1"
+      >
         Sign in
       </CustomButton>
     </form>

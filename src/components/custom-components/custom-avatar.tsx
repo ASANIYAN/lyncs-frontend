@@ -39,7 +39,7 @@ const LyncsAvatar = ({
           className="aspect-square object-cover"
         />
       )}
-      <AvatarFallback className="bg-lyncs-elevated text-lyncs-text-subtle text-xii font-medium">
+      <AvatarFallback className="bg-lyncs-elevated text-lyncs-text-subtle text-xs font-medium">
         {fallback}
       </AvatarFallback>
     </Avatar>

@@ -116,6 +116,7 @@ const CustomButton = React.forwardRef<HTMLElement, CustomButtonProps>(
             fullWidth,
             className,
           }),
+          "cursor-pointer",
         )}
         disabled={disabled || loading}
         {...props}

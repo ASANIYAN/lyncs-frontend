@@ -99,7 +99,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           </button>
         }
       />
-      <CustomButton type="submit" variant="primary" fullWidth className="mt-1">
+      <CustomButton
+        type="submit"
+        variant="primary"
+        fullWidth
+        size={"lg"}
+        className="mt-1"
+      >
         Create account
       </CustomButton>
     </form>

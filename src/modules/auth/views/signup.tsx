@@ -9,8 +9,8 @@ const Signup = () => {
     <AuthLayout>
       <section className="min-h-screen flex items-center justify-center px-5">
         <section className="w-full max-w-sm">
-          <div className="mb-8 text-center">
-            <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="mb-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
               <div className="bg-lyncs-accent rounded-lg size-7 flex items-center justify-center">
                 <Link2 size={14} color="#0a0a0a" />
               </div>
@@ -19,7 +19,7 @@ const Signup = () => {
               </span>
             </div>
             <h1 className="text-xxii font-semibold text-lyncs-text tracking-[-0.5px] mb-1.5">
-              Create your account
+              Create account
             </h1>
             <p className="text-xiii text-lyncs-text-muted">
               Start shortening links in seconds
@@ -30,7 +30,7 @@ const Signup = () => {
             <SignupForm />
           </section>
 
-          <p className="text-center text-xii text-lyncs-text-muted mt-5">
+          <p className="text-center text-xs text-lyncs-text-muted pt-4">
             Already have an account?{" "}
             <Link
               to="/login"
