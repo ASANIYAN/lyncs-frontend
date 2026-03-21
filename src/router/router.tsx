@@ -3,18 +3,31 @@ import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import App from "../App";
 import Signup from "@/modules/auth/views/signup";
 import Login from "@/modules/auth/views/login";
+import DashboardLayout from "@/components/layouts/dashboard-layout";
+import UrlsView from "@/modules/urls/views/urls-view";
+import AnalyticsView from "@/modules/analytics/views/analytics-view";
+import ProfileView from "@/modules/profile/views/profile-view";
 
-// const protectedRoutes: RouteObject[] = [
-//   {
-//     element: <MainLayout />,
-//     children: [
-//       {
-//         path: "/dashboard",
-//         element: <Dashboard />,
-//       },
-//     ],
-//   },
-// ];
+const dashboardRoutes: RouteObject[] = [
+  {
+    path: "/dashboard",
+    element: <DashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: <UrlsView />,
+      },
+      {
+        path: "analytics/:shortCode",
+        element: <AnalyticsView />,
+      },
+      {
+        path: "profile",
+        element: <ProfileView />,
+      },
+    ],
+  },
+];
 
 // Unprotected routes
 const unprotectedRoutes: RouteObject[] = [
@@ -38,7 +51,7 @@ export const routes: RouteObject[] = [
     path: "/",
     element: <App />, // App component acts as the root boundary
     errorElement: <></>, // A global error element
-    children: [...unprotectedRoutes],
+    children: [...unprotectedRoutes, ...dashboardRoutes],
   },
 ];
 

@@ -13,6 +13,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  functionalUpdate,
   type Table as TanstackTable,
   type Row,
 } from "@tanstack/react-table";
@@ -44,6 +45,8 @@ type DataTableProps<TData, TValue> = {
   pageSize?: number;
   className?: string;
   loading?: boolean;
+  columnVisibility?: VisibilityState;
+  onColumnVisibilityChange?: (state: VisibilityState) => void;
   emptyTitle?: string;
   emptyDescription?: string;
   emptyIcon?: React.ReactNode;
@@ -176,6 +179,8 @@ export function DataTable<TData, TValue>({
   className,
   pageSize = 10,
   loading = false,
+  columnVisibility: controlledColumnVisibility,
+  onColumnVisibilityChange,
   emptyTitle = "No results",
   emptyDescription = "Nothing to show here yet.",
   emptyIcon,
@@ -194,6 +199,14 @@ export function DataTable<TData, TValue>({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [activeRowId, setActiveRowId] = React.useState<string | null>(null);
+  const resolvedColumnVisibility =
+    controlledColumnVisibility ?? columnVisibility;
+
+  React.useEffect(() => {
+    if (controlledColumnVisibility) {
+      setColumnVisibility(controlledColumnVisibility);
+    }
+  }, [controlledColumnVisibility]);
 
   const table = useReactTable({
     data,
@@ -204,12 +217,20 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange: onColumnVisibilityChange
+      ? (updaterOrValue) => {
+          const newState = functionalUpdate(
+            updaterOrValue,
+            resolvedColumnVisibility,
+          );
+          onColumnVisibilityChange(newState);
+        }
+      : setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
+      columnVisibility: resolvedColumnVisibility,
       rowSelection,
     },
     initialState: {

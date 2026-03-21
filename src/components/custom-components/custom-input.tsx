@@ -110,7 +110,7 @@ const CustomInput = <TFieldValues extends FieldValues>(
               data-slot="custom-input-wrapper"
               className={cn(
                 "flex items-center gap-2 rounded-md px-2.5 py-1.5 transition-colors",
-                "bg-lyncs-card border border-lyncs-border hover:border-lyncs-border-hover",
+                "bg-lyncs-card border border-lyncs-border",
                 isFocused &&
                   "bg-lyncs-elevated border-lyncs-accent shadow-[0_0_0_3px_var(--color-lyncs-accent-dim)]",
                 hasError &&
@@ -133,7 +133,7 @@ const CustomInput = <TFieldValues extends FieldValues>(
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 className={cn(
-                  "h-auto border-none bg-transparent px-0 py-0 text-[13.5px] text-lyncs-text placeholder:text-lyncs-text-faint focus-visible:ring-0",
+                  "h-auto border-none bg-transparent px-0 py-0 text-[13.5px] text-lyncs-text placeholder:text-lyncs-text-faint focus-visible:ring-0 aria-invalid:ring-0 aria-invalid:ring-transparent",
                   inputClassName,
                 )}
               />

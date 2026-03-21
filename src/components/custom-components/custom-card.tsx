@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 
 import {
   Card,
@@ -8,11 +8,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/card"
-import { cn } from "@/lib/utils"
+} from "../ui/card";
+import { cn } from "@/lib/utils";
 
 interface LyncsCardProps extends React.ComponentProps<typeof Card> {
-  className?: string
+  className?: string;
 }
 
 const LyncsCard = ({ className, ...props }: LyncsCardProps) => {
@@ -21,18 +21,18 @@ const LyncsCard = ({ className, ...props }: LyncsCardProps) => {
       data-slot="lyncs-card"
       className={cn(
         "bg-lyncs-card border border-lyncs-border rounded-xl text-lyncs-text",
-        className
+        className,
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 interface LyncsStatCardProps extends React.ComponentProps<"div"> {
-  label: string
-  value: string | number
-  icon: React.ReactNode
-  accent?: boolean
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+  accent?: boolean;
 }
 
 const LyncsStatCard = ({
@@ -53,9 +53,7 @@ const LyncsStatCard = ({
         data-slot="lyncs-stat-card-icon"
         className={cn(
           "flex size-9 items-center justify-center rounded-md",
-          accent
-            ? "bg-lyncs-accent-dim"
-            : "bg-lyncs-elevated"
+          accent ? "bg-lyncs-accent-dim" : "bg-lyncs-elevated",
         )}
       >
         {icon}
@@ -63,7 +61,7 @@ const LyncsStatCard = ({
       <div data-slot="lyncs-stat-card-body" className="flex flex-col">
         <div
           data-slot="lyncs-stat-card-value"
-          className="text-[22px] font-semibold tracking-tight leading-none"
+          className="text-xxii font-semibold tracking-tight leading-none"
         >
           {value}
         </div>
@@ -75,8 +73,8 @@ const LyncsStatCard = ({
         </div>
       </div>
     </LyncsCard>
-  )
-}
+  );
+};
 
 export {
   Card,
@@ -88,4 +86,4 @@ export {
   CardTitle,
   LyncsCard,
   LyncsStatCard,
-}
+};
