@@ -1,3 +1,4 @@
+import * as React from "react";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -8,11 +9,13 @@ import {
   CardTitle,
 } from "@/components/custom-components/custom-card";
 import { CustomButton } from "@/components/custom-components/custom-button";
+import SignOutDialog from "@/components/custom-components/signout-dialog";
 import { useAuthStore } from "@/store/auth-store";
 import ProfileCard from "../components/profile-card";
 import { useProfile } from "../hooks/use-profile";
 
 const ProfileView = () => {
+  const [signOutDialogOpen, setSignOutDialogOpen] = React.useState(false);
   const navigate = useNavigate();
   const { logout } = useAuthStore();
   const { data, isLoading } = useProfile();
@@ -64,13 +67,20 @@ const ProfileView = () => {
             <CustomButton
               variant="danger"
               leftIcon={<LogOut className="size-4" />}
-              onClick={handleSignOut}
+              onClick={() => setSignOutDialogOpen(true)}
+              className="bg-lyncs-danger text-white border-lyncs-danger hover:bg-lyncs-danger/90"
             >
               Sign out
             </CustomButton>
           </CardContent>
         </LyncsCard>
       </div>
+
+      <SignOutDialog
+        open={signOutDialogOpen}
+        onOpenChange={setSignOutDialogOpen}
+        onConfirm={handleSignOut}
+      />
     </div>
   );
 };

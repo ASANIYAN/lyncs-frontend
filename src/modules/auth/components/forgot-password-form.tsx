@@ -2,36 +2,34 @@
 
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { CustomButton } from "@/components/custom-components/custom-button";
 import { CustomInput } from "@/components/custom-components/custom-input";
 import AuthOtpDialog from "@/modules/auth/components/auth-otp-dialog";
-import { useSignupForm } from "@/modules/auth/hooks/use-signup-form";
+import { useForgotPasswordFlow } from "@/modules/auth/hooks/use-forgot-password-flow";
 
-const SignupForm = () => {
+const ForgotPasswordForm = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
-
   const {
-    form,
     step,
-    rootError,
-    successMessage,
-    isSubmittingCredentials,
+    email,
+    requestForm,
+    resetForm,
+    isSubmittingRequest,
+    isSubmittingReset,
     otpDialog,
     otpTitle,
     otpDescription,
     setOtpDialog,
     closeOtpDialog,
-    handleCredentialsSubmit,
+    handleRequestOtp,
     handleVerifyOtp,
     handleResendOtp,
-  } = useSignupForm();
-
-  const togglePassword = () => setShowPassword((prev) => !prev);
-  const toggleConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
+    handleResetPassword,
+  } = useForgotPasswordFlow();
 
   const handleToggleKeyDown = (
     toggle: () => void,
@@ -43,62 +41,97 @@ const SignupForm = () => {
     }
   };
 
+  if (step === "success") {
+    return (
+      <section className="space-y-4 text-center py-1">
+        <div className="space-y-1.5">
+          <h2 className="text-xvi font-semibold text-lyncs-text tracking-[-0.3px]">
+            Password reset complete
+          </h2>
+          <p className="text-xiii text-lyncs-text-muted">
+            Your new password is set. You can now sign in with it.
+          </p>
+        </div>
+        <CustomButton
+          variant="primary"
+          fullWidth
+          size="lg"
+          onClick={() => navigate("/login")}
+        >
+          Back to login
+        </CustomButton>
+      </section>
+    );
+  }
+
   return (
     <>
-      {step === "success" ? (
-        <section className="space-y-4 text-center py-1">
-          <div className="space-y-1.5">
-            <h2 className="text-xvi font-semibold text-lyncs-text tracking-[-0.3px]">
-              Account created
-            </h2>
-            <p className="text-xiii text-lyncs-text-muted">{successMessage}</p>
-          </div>
-          <div className="space-y-2">
-            <CustomButton
-              variant="primary"
-              fullWidth
-              size="lg"
-              onClick={() => navigate("/login")}
-            >
-              Continue to sign in
-            </CustomButton>
-            <CustomButton
-              variant="secondary"
-              fullWidth
-              size="lg"
-              onClick={() => navigate("/dashboard")}
-            >
-              Go to dashboard
-            </CustomButton>
-          </div>
-        </section>
-      ) : (
+      {step === "request-otp" ? (
         <form
-          onSubmit={form.handleSubmit(handleCredentialsSubmit)}
+          onSubmit={requestForm.handleSubmit(handleRequestOtp)}
           className="space-y-3.5"
           noValidate
         >
           <CustomInput
-            control={form.control}
+            control={requestForm.control}
             name="email"
-            label="Email address"
+            label="Email"
             requiredMark
             placeholder="you@example.com"
             type="email"
           />
+          {requestForm.formState.errors.root?.message ? (
+            <p className="text-xs text-lyncs-danger">
+              {requestForm.formState.errors.root.message}
+            </p>
+          ) : null}
+          <CustomButton
+            type="submit"
+            variant="primary"
+            fullWidth
+            size="lg"
+            loading={isSubmittingRequest}
+          >
+            Request OTP
+          </CustomButton>
+          <CustomButton
+            type="button"
+            variant="secondary"
+            fullWidth
+            size="lg"
+            onClick={() => navigate("/login")}
+          >
+            Back to login
+          </CustomButton>
+        </form>
+      ) : (
+        <form
+          onSubmit={resetForm.handleSubmit(handleResetPassword)}
+          className="space-y-3.5"
+          noValidate
+        >
+          <div className="text-xs text-lyncs-text-muted">
+            Resetting password for{" "}
+            <span className="text-lyncs-text font-medium">{email}</span>
+          </div>
           <CustomInput
-            control={form.control}
+            control={resetForm.control}
             name="password"
-            label="Password"
+            label="New password"
             requiredMark
-            placeholder="Create a password"
+            placeholder="Enter a new password"
             type={showPassword ? "text" : "password"}
             description="At least 8 characters, with uppercase, lowercase, number, and special character."
             rightIcon={
               <button
                 type="button"
-                onClick={togglePassword}
-                onKeyDown={(event) => handleToggleKeyDown(togglePassword, event)}
+                onClick={() => setShowPassword((prev) => !prev)}
+                onKeyDown={(event) =>
+                  handleToggleKeyDown(
+                    () => setShowPassword((prev) => !prev),
+                    event,
+                  )
+                }
                 tabIndex={0}
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 className="focus:outline-none hover:opacity-70 transition-opacity cursor-pointer"
@@ -108,18 +141,21 @@ const SignupForm = () => {
             }
           />
           <CustomInput
-            control={form.control}
+            control={resetForm.control}
             name="confirmPassword"
             label="Confirm password"
             requiredMark
-            placeholder="Re-enter your password"
+            placeholder="Re-enter your new password"
             type={showConfirmPassword ? "text" : "password"}
             rightIcon={
               <button
                 type="button"
-                onClick={toggleConfirmPassword}
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
                 onKeyDown={(event) =>
-                  handleToggleKeyDown(toggleConfirmPassword, event)
+                  handleToggleKeyDown(
+                    () => setShowConfirmPassword((prev) => !prev),
+                    event,
+                  )
                 }
                 tabIndex={0}
                 aria-label={showConfirmPassword ? "Hide password" : "Show password"}
@@ -129,26 +165,20 @@ const SignupForm = () => {
               </button>
             }
           />
-          {rootError ? <p className="text-xs text-lyncs-danger">{rootError}</p> : null}
+          {resetForm.formState.errors.root?.message ? (
+            <p className="text-xs text-lyncs-danger">
+              {resetForm.formState.errors.root.message}
+            </p>
+          ) : null}
           <CustomButton
             type="submit"
             variant="primary"
             fullWidth
             size="lg"
-            loading={isSubmittingCredentials}
-            className="mt-1"
+            loading={isSubmittingReset}
           >
-            Request OTP
+            Reset password
           </CustomButton>
-          <p className="text-[11.5px] text-center text-lyncs-text-muted">
-            Already have a code?{" "}
-            <Link
-              to="/login"
-              className="text-lyncs-text-subtle hover:text-lyncs-text transition-colors"
-            >
-              Sign in instead
-            </Link>
-          </p>
         </form>
       )}
 
@@ -182,4 +212,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default ForgotPasswordForm;

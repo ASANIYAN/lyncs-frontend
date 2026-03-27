@@ -26,6 +26,8 @@ interface LyncsDialogProps {
   footer?: React.ReactNode
   showCloseButton?: boolean
   maxWidth?: string
+  showHeaderDivider?: boolean
+  showFooterDivider?: boolean
 }
 
 const LyncsDialog = ({
@@ -37,6 +39,8 @@ const LyncsDialog = ({
   footer,
   showCloseButton = true,
   maxWidth = "sm:max-w-2xl",
+  showHeaderDivider = true,
+  showFooterDivider = true,
 }: LyncsDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -51,7 +55,10 @@ const LyncsDialog = ({
         >
           <DialogHeader
             data-slot="lyncs-dialog-header"
-            className="border-b border-lyncs-border px-6 py-4"
+            className={cn(
+              "px-6 py-4",
+              showHeaderDivider && "border-b border-lyncs-border"
+            )}
           >
             <DialogTitle className="text-[15px] font-medium text-lyncs-text">
               {title}
@@ -68,7 +75,10 @@ const LyncsDialog = ({
           {footer && (
             <div
               data-slot="lyncs-dialog-footer"
-              className="border-t border-lyncs-border px-6 py-4 bg-transparent"
+              className={cn(
+                "px-6 py-4 bg-transparent",
+                showFooterDivider && "border-t border-lyncs-border"
+              )}
             >
               {footer}
             </div>

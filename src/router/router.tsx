@@ -3,6 +3,7 @@ import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import App from "../App";
 import Signup from "@/modules/auth/views/signup";
 import Login from "@/modules/auth/views/login";
+import ForgotPassword from "@/modules/auth/views/forgot-password";
 import DashboardLayout from "@/components/layouts/dashboard-layout";
 import UrlsView from "@/modules/urls/views/urls-view";
 import AnalyticsView from "@/modules/analytics/views/analytics-view";
@@ -42,6 +43,10 @@ const unprotectedRoutes: RouteObject[] = [
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
 ];
 

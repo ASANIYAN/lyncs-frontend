@@ -91,7 +91,13 @@ const LyncsProgress = ({
       {(label || showValue) && (
         <div className="flex items-center gap-2">
           {label && <ProgressLabel>{label}</ProgressLabel>}
-          {showValue && <ProgressValue>{clampedValue}%</ProgressValue>}
+          {showValue && (
+            <ProgressValue>
+              {(_formattedValue, resolvedValue) =>
+                `${resolvedValue ?? clampedValue}%`
+              }
+            </ProgressValue>
+          )}
         </div>
       )}
       <ProgressTrack>

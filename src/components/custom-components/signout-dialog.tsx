@@ -1,27 +1,21 @@
+import { LogOut } from "lucide-react";
+
 import { LyncsDialog } from "@/components/custom-components/custom-dialog";
 import { CustomButton } from "@/components/custom-components/custom-button";
 
-interface DeleteUrlDialogProps {
+interface SignOutDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  shortCode: string | null;
   onConfirm: () => void;
-  isPending: boolean;
 }
 
-const DeleteUrlDialog = ({
-  open,
-  onOpenChange,
-  shortCode,
-  onConfirm,
-  isPending,
-}: DeleteUrlDialogProps) => {
+const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) => {
   return (
     <LyncsDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Delete short URL"
-      description={`This will permanently delete /${shortCode ?? ""} and all its click data. This action cannot be undone.`}
+      title="Sign out?"
+      description="You will need to sign in again to access your dashboard."
       maxWidth="sm:max-w-sm"
       showHeaderDivider
       showFooterDivider={false}
@@ -30,7 +24,6 @@ const DeleteUrlDialog = ({
           <CustomButton
             variant="secondary"
             size="lg"
-            className="font-medium"
             onClick={() => onOpenChange(false)}
           >
             Cancel
@@ -38,20 +31,20 @@ const DeleteUrlDialog = ({
           <CustomButton
             variant="danger"
             size="lg"
-            className="bg-lyncs-danger text-white border-lyncs-danger hover:bg-lyncs-danger/90 font-medium"
-            loading={isPending}
+            leftIcon={<LogOut className="size-4" />}
+            className="bg-lyncs-danger text-white border-lyncs-danger hover:bg-lyncs-danger/90"
             onClick={onConfirm}
           >
-            Delete
+            Sign out
           </CustomButton>
         </div>
       }
     >
-      <div className="text-xiii text-lyncs-text-muted">
-        Confirm you want to remove this short URL.
-      </div>
+      <p className="text-xiii text-lyncs-text-muted">
+        Your current session will end on this device.
+      </p>
     </LyncsDialog>
   );
 };
 
-export default DeleteUrlDialog;
+export default SignOutDialog;

@@ -5,6 +5,7 @@ import { BarChart2, Link2, LogOut, Menu, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CustomButton } from "@/components/custom-components/custom-button";
 import { LyncsAvatar } from "@/components/custom-components/custom-avatar";
+import SignOutDialog from "@/components/custom-components/signout-dialog";
 import { useAuthStore } from "@/store/auth-store";
 
 interface DashboardLayoutProps {
@@ -13,6 +14,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [signOutDialogOpen, setSignOutDialogOpen] = React.useState(false);
   const navigate = useNavigate();
   const { email, logout } = useAuthStore();
 
@@ -21,6 +23,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const handleSignOut = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleSignOutClick = () => {
+    setSignOutDialogOpen(true);
+    setDrawerOpen(false);
   };
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
@@ -67,7 +74,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             size="sm"
             leftIcon={<LogOut className="size-4" />}
             className="mt-3 w-full justify-start"
-            onClick={handleSignOut}
+            onClick={handleSignOutClick}
           >
             Sign out
           </CustomButton>
@@ -160,7 +167,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               size="sm"
               leftIcon={<LogOut className="size-4" />}
               className="mt-3 w-full justify-start"
-              onClick={handleSignOut}
+              onClick={handleSignOutClick}
             >
               Sign out
             </CustomButton>
@@ -204,7 +211,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </NavLink>
           <button
             type="button"
-            onClick={handleSignOut}
+            onClick={handleSignOutClick}
             className="flex flex-col items-center justify-center gap-1 text-x text-lyncs-text-muted"
           >
             <LogOut className="size-4" />
@@ -212,6 +219,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </button>
         </div>
       </nav>
+
+      <SignOutDialog
+        open={signOutDialogOpen}
+        onOpenChange={setSignOutDialogOpen}
+        onConfirm={handleSignOut}
+      />
     </section>
   );
 };
