@@ -4,6 +4,7 @@ import { useForm, type FieldError } from "react-hook-form";
 import { toast } from "sonner";
 
 import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import { primeSessionActivityTimestamp } from "@/modules/system/session/session-timeout-manager";
 import { unauthApi } from "@/services/api-service";
 import { setAuthSession } from "@/store/auth-store";
 import {
@@ -111,6 +112,7 @@ export const useLoginForm = (
           ...data,
           email: values.email,
         });
+        primeSessionActivityTimestamp();
         setStep("authenticated");
         toast.success("Signed in successfully.");
         options?.onAuthenticated?.(data);
@@ -146,6 +148,7 @@ export const useLoginForm = (
         ...data,
         email: pendingPayload.email,
       });
+      primeSessionActivityTimestamp();
       setStep("authenticated");
       setOtpDialog(defaultOtpDialogState);
       toast.success("Signed in successfully.");
@@ -186,6 +189,7 @@ export const useLoginForm = (
           ...data,
           email: pendingPayload.email,
         });
+        primeSessionActivityTimestamp();
         setStep("authenticated");
         setOtpDialog(defaultOtpDialogState);
         toast.success("Signed in successfully.");

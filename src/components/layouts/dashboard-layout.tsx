@@ -1,11 +1,12 @@
 import * as React from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { BarChart2, Link2, LogOut, Menu, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { CustomButton } from "@/components/custom-components/custom-button";
 import { LyncsAvatar } from "@/components/custom-components/custom-avatar";
 import SignOutDialog from "@/components/custom-components/signout-dialog";
+import SessionTimeoutProvider from "@/modules/system/providers/session-timeout-provider";
 import { useAuthStore } from "@/store/auth-store";
 import { useLogout } from "@/modules/auth/hooks/use-logout";
 
@@ -16,7 +17,6 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [signOutDialogOpen, setSignOutDialogOpen] = React.useState(false);
-  const navigate = useNavigate();
   const { email } = useAuthStore();
   const { logout } = useLogout();
 
@@ -24,7 +24,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const handleSignOut = () => {
     logout();
-    navigate("/login");
   };
 
   const handleSignOutClick = () => {
@@ -40,7 +39,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     );
 
   return (
-    <section className="font-geist min-h-dvh bg-lyncs-bg">
+    <SessionTimeoutProvider>
+      <section className="font-geist min-h-dvh bg-lyncs-bg">
       {/* Sidebar */}
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col md:border-r md:border-lyncs-border md:bg-lyncs-surface">
         <div className="flex items-center gap-2 px-5 py-4">
@@ -222,12 +222,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
       </nav>
 
-      <SignOutDialog
-        open={signOutDialogOpen}
-        onOpenChange={setSignOutDialogOpen}
-        onConfirm={handleSignOut}
-      />
-    </section>
+        <SignOutDialog
+          open={signOutDialogOpen}
+          onOpenChange={setSignOutDialogOpen}
+          onConfirm={handleSignOut}
+        />
+      </section>
+    </SessionTimeoutProvider>
   );
 };
 

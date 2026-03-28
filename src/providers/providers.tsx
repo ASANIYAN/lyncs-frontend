@@ -6,6 +6,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import router from "../router/router";
 import { Toaster } from "@/components/ui/sonner";
 import { useBackendWarmup } from "@/modules/system/hooks/use-backend-warmup";
+import { registerSessionQueryClient } from "@/modules/system/session/session-runtime";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   useBackendWarmup();
@@ -21,6 +22,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
         },
       }),
   );
+  registerSessionQueryClient(queryClient);
 
   return (
     <QueryClientProvider client={queryClient}>

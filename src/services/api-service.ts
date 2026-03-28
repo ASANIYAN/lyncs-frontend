@@ -1,8 +1,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { status401, status403 } from "@/lib/domain";
 import { getToken } from "@/lib/token";
+import { runCentralizedLogout } from "@/modules/system/session/centralized-logout";
 import {
-  clearAuthSession,
   getRefreshToken,
   updateAuthTokens,
 } from "@/store/auth-store";
@@ -72,7 +71,10 @@ authApi.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
       config.headers["Content-Type"] = "application/json";
     } else {
-      status401();
+      runCentralizedLogout({
+        reason: "missing_token",
+        shouldBroadcast: false,
+      });
     }
     return config;
   },
@@ -96,8 +98,10 @@ authApi.interceptors.response.use(
     ) {
       const refreshToken = getRefreshToken();
       if (!refreshToken) {
-        clearAuthSession();
-        status401();
+        runCentralizedLogout({
+          reason: "unauthorized",
+          shouldBroadcast: true,
+        });
         return Promise.reject(error);
       }
 
@@ -112,17 +116,24 @@ authApi.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return authApi(originalRequest);
       } catch (refreshError) {
-        clearAuthSession();
-        status401();
+        runCentralizedLogout({
+          reason: "unauthorized",
+          shouldBroadcast: true,
+        });
         return Promise.reject(refreshError);
       }
     }
 
     if (error.response?.status === 403) {
-      status403();
+      runCentralizedLogout({
+        reason: "forbidden",
+        shouldBroadcast: true,
+      });
     } else if (error.response?.status === 401) {
-      clearAuthSession();
-      status401();
+      runCentralizedLogout({
+        reason: "unauthorized",
+        shouldBroadcast: true,
+      });
     }
     return Promise.reject(error);
   },
@@ -142,6 +153,11 @@ formAuthApi.interceptors.request.use(
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      runCentralizedLogout({
+        reason: "missing_token",
+        shouldBroadcast: false,
+      });
     }
     return config;
   },
@@ -157,9 +173,15 @@ formAuthApi.interceptors.response.use(
   },
   async function (error: AxiosError) {
     if (error.response?.status === 403) {
-      status403();
+      runCentralizedLogout({
+        reason: "forbidden",
+        shouldBroadcast: true,
+      });
     } else if (error.response?.status === 401) {
-      status401();
+      runCentralizedLogout({
+        reason: "unauthorized",
+        shouldBroadcast: true,
+      });
     }
     return Promise.reject(error);
   },

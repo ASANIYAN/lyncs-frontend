@@ -1,6 +1,5 @@
 import * as React from "react";
 import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 import {
   LyncsCard,
@@ -16,13 +15,11 @@ import { useProfile } from "../hooks/use-profile";
 
 const ProfileView = () => {
   const [signOutDialogOpen, setSignOutDialogOpen] = React.useState(false);
-  const navigate = useNavigate();
   const { logout } = useLogout();
   const { data, isLoading } = useProfile();
 
   const handleSignOut = () => {
     logout();
-    navigate("/login");
   };
 
   return (

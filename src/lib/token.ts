@@ -43,7 +43,12 @@ export const setToken = (token: string, expiresInSeconds: number) => {
 export const getToken = (): string | undefined => {
   const encryptedToken = Cookies.get("lyncsToken");
   if (encryptedToken) {
-    return decryptToken(encryptedToken);
+    try {
+      const token = decryptToken(encryptedToken);
+      return token || undefined;
+    } catch {
+      return undefined;
+    }
   }
   return undefined;
 };
