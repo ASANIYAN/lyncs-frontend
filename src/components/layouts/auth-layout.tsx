@@ -13,17 +13,19 @@ type AuthLayoutProps = {
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const [hasActiveSessionOnMount] = React.useState(() => isAuthenticated);
 
   React.useEffect(() => {
     if (!isAuthenticated) return;
+    const redirectDelay = hasActiveSessionOnMount ? 300 : 0;
     const timer = window.setTimeout(() => {
       navigate("/dashboard", { replace: true });
-    }, 300);
+    }, redirectDelay);
 
     return () => window.clearTimeout(timer);
-  }, [isAuthenticated, navigate]);
+  }, [hasActiveSessionOnMount, isAuthenticated, navigate]);
 
-  if (isAuthenticated) {
+  if (isAuthenticated && hasActiveSessionOnMount) {
     return (
       <AuthenticatedRedirectCard
         onContinue={() => navigate("/dashboard", { replace: true })}
