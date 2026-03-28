@@ -1,8 +1,5 @@
-import * as React from "react";
 import {
   BarChart2,
-  Check,
-  Copy,
   ExternalLink,
   MousePointerClick,
   Trash2,
@@ -10,43 +7,21 @@ import {
 
 import type { ColumnDef } from "@/components/custom-components/data-table";
 import { cn } from "@/lib/utils";
-import { LyncsBadge, ShortCodePill } from "@/components/custom-components/custom-badge";
+import { getShortUrl } from "@/lib/shortUrl";
+import {
+  LyncsBadge,
+  ShortCodePill,
+} from "@/components/custom-components/custom-badge";
 import { CustomButton } from "@/components/custom-components/custom-button";
 import { LyncsSpinner } from "@/components/custom-components/custom-spinner";
+import CopyShortUrlButton from "./copy-short-url-button";
 import type { UrlRow } from "../hooks/use-urls";
-
-const SHORT_BASE = "https://lyncs-backend.onrender.com/";
 
 interface UrlColumnsProps {
   onDelete: (shortCode: string) => void;
   onViewAnalytics: (shortCode: string) => void;
   deletingCode?: string | null;
 }
-
-const TableActionCell = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-center gap-2">{children}</div>
-);
-
-const CopyButton = ({ value }: { value: string }) => {
-  const [copied, setCopied] = React.useState(false);
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(value);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="inline-flex items-center text-lyncs-text-muted hover:text-lyncs-text transition-colors"
-      aria-label="Copy short URL"
-    >
-      {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-    </button>
-  );
-};
 
 export const getUrlColumns = ({
   onDelete,
@@ -61,7 +36,7 @@ export const getUrlColumns = ({
       return (
         <span
           title={originalUrl}
-          className="text-[13px] text-lyncs-text max-w-[220px] sm:max-w-[320px] truncate block"
+          className="text-xiii text-lyncs-text max-w-55 sm:max-w-[320px] truncate block"
         >
           {originalUrl}
         </span>
@@ -73,14 +48,16 @@ export const getUrlColumns = ({
     header: "Short code",
     cell: ({ row }) => {
       const shortCode = row.getValue("short_code") as string;
-      const shortUrl = `${SHORT_BASE}${shortCode}`;
+      const shortUrl = getShortUrl(shortCode);
       return (
         <div className="flex items-center gap-2">
           <ShortCodePill code={shortCode} />
-          <CopyButton value={shortUrl} />
+          <CopyShortUrlButton value={shortUrl} />
           <button
             type="button"
-            onClick={() => window.open(shortUrl, "_blank", "noopener,noreferrer")}
+            onClick={() =>
+              window.open(shortUrl, "_blank", "noopener,noreferrer")
+            }
             className="inline-flex items-center text-lyncs-text-muted hover:text-lyncs-text transition-colors"
             aria-label="Open short URL"
           >
@@ -95,9 +72,9 @@ export const getUrlColumns = ({
     header: "Clicks",
     enableSorting: true,
     cell: ({ row }) => {
-      const clicks = row.getValue("click_count") as string;
+      const clicks = row.getValue("click_count") as number;
       return (
-        <div className="flex items-center gap-1.5 text-[13px] tabular-nums">
+        <div className="flex items-center gap-1.5 text-xiii tabular-nums">
           <MousePointerClick className="size-3.5" />
           {clicks}
         </div>
@@ -138,7 +115,7 @@ export const getUrlColumns = ({
     header: "",
     enableSorting: false,
     cell: ({ row }) => (
-      <TableActionCell>
+      <div className="flex items-center gap-2">
         <CustomButton
           variant="icon"
           className={cn("text-lyncs-text-muted hover:text-lyncs-text")}
@@ -159,7 +136,7 @@ export const getUrlColumns = ({
             <Trash2 className="size-3.5" />
           )}
         </CustomButton>
-      </TableActionCell>
+      </div>
     ),
   },
 ];

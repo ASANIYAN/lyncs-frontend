@@ -10,19 +10,20 @@ import {
 } from "@/components/custom-components/custom-card";
 import { CustomButton } from "@/components/custom-components/custom-button";
 import SignOutDialog from "@/components/custom-components/signout-dialog";
-import { useAuthStore } from "@/store/auth-store";
+import { useLogout } from "@/modules/auth/hooks/use-logout";
 import ProfileCard from "../components/profile-card";
 import { useProfile } from "../hooks/use-profile";
 
 const ProfileView = () => {
   const [signOutDialogOpen, setSignOutDialogOpen] = React.useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout } = useLogout();
   const { data, isLoading } = useProfile();
 
   const handleSignOut = () => {
-    logout();
-    navigate("/login");
+    logout().finally(() => {
+      navigate("/login");
+    });
   };
 
   return (

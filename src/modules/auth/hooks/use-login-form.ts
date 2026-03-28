@@ -2,7 +2,9 @@ import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type FieldError } from "react-hook-form";
 
-import { mockAuthClient } from "@/modules/auth/services/mock-auth-client";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import { unauthApi } from "@/services/api-service";
+import { setAuthSession } from "@/store/auth-store";
 import {
   isOtpRequiredResponse,
   type AuthTokens,
@@ -87,12 +89,14 @@ export const useLoginForm = (
       form.clearErrors("root");
 
       try {
-        // TODO(auth-api): Replace mock auth client with real POST /auth/login call.
-        const response = await mockAuthClient.login(values);
-        if (isOtpRequiredResponse(response)) {
+        const { data } = await unauthApi.post<
+          AuthTokens | { otpRequired: true; message: string }
+        >("/auth/login", values);
+
+        if (isOtpRequiredResponse(data)) {
           setPendingPayload(values);
           setStep("otp");
-          setOtpDescription(response.message);
+          setOtpDescription(data.message);
           setOtpDialog({
             ...defaultOtpDialogState,
             isOpen: true,
@@ -101,13 +105,16 @@ export const useLoginForm = (
           return;
         }
 
+        setAuthSession({
+          ...data,
+          email: values.email,
+        });
         setStep("authenticated");
-        options?.onAuthenticated?.(response);
+        options?.onAuthenticated?.(data);
       } catch (error) {
         form.setError("root", {
           type: "manual",
-          message:
-            error instanceof Error ? error.message : "Unable to sign in now.",
+          message: getApiErrorMessage(error, "Unable to sign in now."),
         });
       } finally {
         setIsSubmittingCredentials(false);
@@ -126,21 +133,21 @@ export const useLoginForm = (
     }));
 
     try {
-      // TODO(auth-api): Replace mock auth client with real verify-login-otp endpoint.
-      const tokens = await mockAuthClient.verifyLoginOtp({
-        ...pendingPayload,
+      const { data } = await unauthApi.post<AuthTokens>("/auth/login/verify-otp", {
+        email: pendingPayload.email,
         otp: otpDialog.otpCode,
+      });
+      setAuthSession({
+        ...data,
+        email: pendingPayload.email,
       });
       setStep("authenticated");
       setOtpDialog(defaultOtpDialogState);
-      options?.onAuthenticated?.(tokens);
+      options?.onAuthenticated?.(data);
     } catch (error) {
       setOtpDialog((prev) => ({
         ...prev,
-        otpError:
-          error instanceof Error
-            ? error.message
-            : "Invalid code. Please try again.",
+        otpError: getApiErrorMessage(error, "Invalid code. Please try again."),
       }));
     } finally {
       setOtpDialog((prev) => ({
@@ -159,8 +166,23 @@ export const useLoginForm = (
     }));
 
     try {
-      // TODO(auth-api): Replace mock auth client with real resend-otp endpoint.
-      await mockAuthClient.resendOtp("login", pendingPayload.email);
+      const { data } = await unauthApi.post<
+        AuthTokens | { otpRequired: true; message: string }
+      >("/auth/login", pendingPayload);
+
+      if (isOtpRequiredResponse(data)) {
+        setOtpDescription(data.message);
+      } else {
+        setAuthSession({
+          ...data,
+          email: pendingPayload.email,
+        });
+        setStep("authenticated");
+        setOtpDialog(defaultOtpDialogState);
+        options?.onAuthenticated?.(data);
+        return;
+      }
+
       setOtpDialog((prev) => ({
         ...prev,
         resendCooldown: RESEND_COOLDOWN_SECONDS,
@@ -168,8 +190,7 @@ export const useLoginForm = (
     } catch (error) {
       setOtpDialog((prev) => ({
         ...prev,
-        otpError:
-          error instanceof Error ? error.message : "Could not resend OTP now.",
+        otpError: getApiErrorMessage(error, "Could not resend OTP now."),
       }));
     } finally {
       setOtpDialog((prev) => ({
@@ -177,7 +198,7 @@ export const useLoginForm = (
         isResending: false,
       }));
     }
-  }, [otpDialog.resendCooldown, pendingPayload]);
+  }, [options, otpDialog.resendCooldown, pendingPayload]);
 
   const rootError = form.formState.errors.root as FieldError | undefined;
 

@@ -109,8 +109,8 @@ const UrlsView = () => {
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return;
     deleteUrl(deleteTarget, {
-      onSuccess: () => {
-        toast.success("Short URL deleted");
+      onSuccess: (data) => {
+        toast.success(data.message || "Short URL deleted");
         setDeleteTarget(null);
       },
       onError: () => {

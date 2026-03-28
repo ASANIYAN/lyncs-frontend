@@ -1,6 +1,7 @@
 import { Globe, Monitor, MousePointerClick, Users } from "lucide-react";
 
 import { LyncsStatCard } from "@/components/custom-components/custom-card";
+import { getCountryNameFromIso2 } from "@/lib/country";
 import type { AnalyticsData } from "../hooks/use-analytics";
 
 interface AnalyticsStatCardsProps {
@@ -23,7 +24,7 @@ const AnalyticsStatCards = ({ data }: AnalyticsStatCardsProps) => {
       />
       <LyncsStatCard
         label="Top country"
-        value={data.topCountries?.[0]?.country ?? "—"}
+        value={getCountryNameFromIso2(data.topCountries?.[0]?.country, "—")}
         icon={<Globe className="size-4 text-lyncs-text" />}
       />
       <LyncsStatCard

@@ -7,6 +7,7 @@ import { CustomButton } from "@/components/custom-components/custom-button";
 import { LyncsAvatar } from "@/components/custom-components/custom-avatar";
 import SignOutDialog from "@/components/custom-components/signout-dialog";
 import { useAuthStore } from "@/store/auth-store";
+import { useLogout } from "@/modules/auth/hooks/use-logout";
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -16,13 +17,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [signOutDialogOpen, setSignOutDialogOpen] = React.useState(false);
   const navigate = useNavigate();
-  const { email, logout } = useAuthStore();
+  const { email } = useAuthStore();
+  const { logout } = useLogout();
 
   const initials = email?.[0]?.toUpperCase() ?? "U";
 
   const handleSignOut = () => {
-    logout();
-    navigate("/login");
+    logout().finally(() => {
+      navigate("/login");
+    });
   };
 
   const handleSignOutClick = () => {

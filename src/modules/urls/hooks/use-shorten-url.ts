@@ -1,31 +1,49 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { __urlsStore, type UrlRow } from "./use-urls";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import { authApi } from "@/services/api-service";
 
-const createShortCode = () =>
-  Math.random().toString(36).replace(/[^a-z0-9]+/g, "").slice(2, 8);
+interface ShortenPayload {
+  url: string;
+}
+
+interface ShortenUrlResponse {
+  id: string;
+  short_code: string;
+  original_url: string;
+  created_at: string;
+  expires_at: string | null;
+  is_active: boolean;
+  safety_checked: boolean;
+  safety_checked_at: string | null;
+  click_count: number;
+  safety_status: string;
+  normalized_url: string;
+  url_hash: string;
+  last_checked_at: string | null;
+  isNew: boolean;
+  message: string;
+}
 
 export const useShortenUrl = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (payload: { url: string }) => {
-      const now = new Date().toISOString();
-      const newUrl: UrlRow = {
-        id: `${Date.now()}`,
-        original_url: payload.url,
-        short_code: createShortCode(),
-        click_count: "0",
-        created_at: now,
-        is_active: true,
-      };
-
-      const nextUrls = [newUrl, ...__urlsStore.get()];
-      __urlsStore.set(nextUrls);
-      return newUrl;
+    mutationFn: async (payload: ShortenPayload) => {
+      try {
+        const { data } = await authApi.post<ShortenUrlResponse>(
+          "/urls/shorten",
+          payload,
+        );
+        return data;
+      } catch (error) {
+        const message = getApiErrorMessage(error, "Failed to shorten URL.");
+        throw new Error(message);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["urls"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });
 
@@ -35,3 +53,4 @@ export const useShortenUrl = () => {
     error: mutation.error,
   };
 };
+

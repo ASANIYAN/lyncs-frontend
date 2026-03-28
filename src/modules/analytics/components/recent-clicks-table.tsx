@@ -12,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import CountryFlag from "@/components/custom-components/country-flag";
+import { getCountryNameFromIso2 } from "@/lib/country";
 
 interface RecentClicksTableProps {
   clicks: {
@@ -21,19 +23,6 @@ interface RecentClicksTableProps {
     deviceType: string;
   }[];
 }
-
-const toFlagEmoji = (code: string) => {
-  try {
-    return String.fromCodePoint(
-      ...code
-        .toUpperCase()
-        .split("")
-        .map((char) => 0x1f1e6 + char.charCodeAt(0) - 65),
-    );
-  } catch {
-    return "🌐";
-  }
-};
 
 const formatReferrer = (referrer: string) => {
   try {
@@ -83,10 +72,8 @@ const RecentClicksTable = ({ clicks }: RecentClicksTableProps) => {
                 </TableCell>
                 <TableCell className="text-[12px] text-lyncs-text-muted">
                   <span className="inline-flex items-center gap-2">
-                    <span>
-                      {click.country ? toFlagEmoji(click.country) : "🌐"}
-                    </span>
-                    <span>{click.country || "—"}</span>
+                    <CountryFlag countryCode={click.country} className="size-4" />
+                    <span>{getCountryNameFromIso2(click.country, "—")}</span>
                   </span>
                 </TableCell>
                 <TableCell className="text-[12px] text-lyncs-text-muted">

@@ -2,7 +2,8 @@ import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type FieldError } from "react-hook-form";
 
-import { mockAuthClient } from "@/modules/auth/services/mock-auth-client";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import { unauthApi } from "@/services/api-service";
 import type {
   OtpDialogState,
   SignupFlowStep,
@@ -89,11 +90,15 @@ export const useSignupForm = (): UseSignupFormReturn => {
       };
 
       try {
-        // TODO(auth-api): Replace mock auth client with real signup OTP request endpoint.
-        const response = await mockAuthClient.requestSignupOtp(payload);
+        const { data } = await unauthApi.post<{ message: string }>(
+          "/auth/register/request-otp",
+          {
+            email: payload.email,
+          },
+        );
         setPendingPayload(payload);
         setStep("otp");
-        setOtpDescription(response.message);
+        setOtpDescription(data.message);
         setOtpDialog({
           ...defaultOtpDialogState,
           isOpen: true,
@@ -102,10 +107,7 @@ export const useSignupForm = (): UseSignupFormReturn => {
       } catch (error) {
         form.setError("root", {
           type: "manual",
-          message:
-            error instanceof Error
-              ? error.message
-              : "Could not start signup flow.",
+          message: getApiErrorMessage(error, "Could not start signup flow."),
         });
       } finally {
         setIsSubmittingCredentials(false);
@@ -124,21 +126,17 @@ export const useSignupForm = (): UseSignupFormReturn => {
     }));
 
     try {
-      // TODO(auth-api): Replace mock auth client with real signup OTP verify endpoint.
-      const response = await mockAuthClient.verifySignupOtp({
+      const { data } = await unauthApi.post<{ message: string }>("/auth/register", {
         ...pendingPayload,
         otp: otpDialog.otpCode,
       });
-      setSuccessMessage(response.message);
+      setSuccessMessage(data.message);
       setStep("success");
       setOtpDialog(defaultOtpDialogState);
     } catch (error) {
       setOtpDialog((prev) => ({
         ...prev,
-        otpError:
-          error instanceof Error
-            ? error.message
-            : "Could not verify your OTP code.",
+        otpError: getApiErrorMessage(error, "Could not verify your OTP code."),
       }));
     } finally {
       setOtpDialog((prev) => ({
@@ -157,12 +155,13 @@ export const useSignupForm = (): UseSignupFormReturn => {
     }));
 
     try {
-      // TODO(auth-api): Replace mock auth client with real resend-otp endpoint.
-      const response = await mockAuthClient.resendOtp(
-        "signup",
-        pendingPayload.email,
+      const { data } = await unauthApi.post<{ message: string }>(
+        "/auth/register/request-otp",
+        {
+          email: pendingPayload.email,
+        },
       );
-      setOtpDescription(response.message);
+      setOtpDescription(data.message);
       setOtpDialog((prev) => ({
         ...prev,
         resendCooldown: RESEND_COOLDOWN_SECONDS,
@@ -170,8 +169,7 @@ export const useSignupForm = (): UseSignupFormReturn => {
     } catch (error) {
       setOtpDialog((prev) => ({
         ...prev,
-        otpError:
-          error instanceof Error ? error.message : "Could not resend OTP now.",
+        otpError: getApiErrorMessage(error, "Could not resend OTP now."),
       }));
     } finally {
       setOtpDialog((prev) => ({

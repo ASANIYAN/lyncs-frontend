@@ -22,8 +22,8 @@ const ShortenBar = () => {
     mutate(
       { url: values.url },
       {
-        onSuccess: () => {
-          toast.success("Short URL created");
+        onSuccess: (data) => {
+          toast.success(data.message || "Short URL created");
           form.reset();
         },
         onError: (err) => {

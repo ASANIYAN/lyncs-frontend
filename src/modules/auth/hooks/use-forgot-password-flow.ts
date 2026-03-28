@@ -2,7 +2,8 @@ import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { mockAuthClient } from "@/modules/auth/services/mock-auth-client";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import { unauthApi } from "@/services/api-service";
 import type {
   ForgotPasswordFlowStep,
   OtpDialogState,
@@ -75,10 +76,12 @@ export const useForgotPasswordFlow = () => {
       requestForm.clearErrors("root");
 
       try {
-        // TODO(auth-api): Replace mock auth client with real forgot-password OTP request endpoint.
-        const response = await mockAuthClient.requestForgotPasswordOtp(values);
+        const { data } = await unauthApi.post<{ message: string }>(
+          "/auth/forgot-password/request-otp",
+          values,
+        );
         setEmail(values.email);
-        setOtpDescription(response.message);
+        setOtpDescription(data.message);
         setOtpDialog({
           ...defaultOtpDialogState,
           isOpen: true,
@@ -87,10 +90,7 @@ export const useForgotPasswordFlow = () => {
       } catch (error) {
         requestForm.setError("root", {
           type: "manual",
-          message:
-            error instanceof Error
-              ? error.message
-              : "Could not request OTP right now.",
+          message: getApiErrorMessage(error, "Could not request OTP right now."),
         });
       } finally {
         setIsSubmittingRequest(false);
@@ -109,21 +109,13 @@ export const useForgotPasswordFlow = () => {
     }));
 
     try {
-      // TODO(auth-api): Replace mock auth client with real forgot-password OTP verify endpoint.
-      await mockAuthClient.verifyForgotPasswordOtp({
-        email,
-        otp: otpDialog.otpCode,
-      });
       setVerifiedOtp(otpDialog.otpCode);
       setStep("set-password");
       setOtpDialog(defaultOtpDialogState);
     } catch (error) {
       setOtpDialog((prev) => ({
         ...prev,
-        otpError:
-          error instanceof Error
-            ? error.message
-            : "Could not verify your OTP code.",
+        otpError: getApiErrorMessage(error, "Could not verify your OTP code."),
       }));
     } finally {
       setOtpDialog((prev) => ({
@@ -142,9 +134,11 @@ export const useForgotPasswordFlow = () => {
     }));
 
     try {
-      // TODO(auth-api): Replace mock auth client with real resend-otp endpoint.
-      const response = await mockAuthClient.resendOtp("forgot-password", email);
-      setOtpDescription(response.message);
+      const { data } = await unauthApi.post<{ message: string }>(
+        "/auth/forgot-password/request-otp",
+        { email },
+      );
+      setOtpDescription(data.message);
       setOtpDialog((prev) => ({
         ...prev,
         resendCooldown: RESEND_COOLDOWN_SECONDS,
@@ -152,8 +146,7 @@ export const useForgotPasswordFlow = () => {
     } catch (error) {
       setOtpDialog((prev) => ({
         ...prev,
-        otpError:
-          error instanceof Error ? error.message : "Could not resend OTP now.",
+        otpError: getApiErrorMessage(error, "Could not resend OTP now."),
       }));
     } finally {
       setOtpDialog((prev) => ({
@@ -171,8 +164,7 @@ export const useForgotPasswordFlow = () => {
       resetForm.clearErrors("root");
 
       try {
-        // TODO(auth-api): Replace mock auth client with real reset-password endpoint.
-        await mockAuthClient.resetPassword({
+        await unauthApi.post("/auth/forgot-password/confirm", {
           email,
           otp: verifiedOtp,
           newPassword: values.password,
@@ -181,10 +173,7 @@ export const useForgotPasswordFlow = () => {
       } catch (error) {
         resetForm.setError("root", {
           type: "manual",
-          message:
-            error instanceof Error
-              ? error.message
-              : "Could not reset password right now.",
+          message: getApiErrorMessage(error, "Could not reset password right now."),
         });
       } finally {
         setIsSubmittingReset(false);

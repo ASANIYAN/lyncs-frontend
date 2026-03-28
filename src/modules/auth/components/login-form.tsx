@@ -32,7 +32,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onAuthenticated }) => {
     closeOtpDialog,
   } = useLoginForm({
     onAuthenticated: (tokens) => {
-      // TODO(auth-api): Inject real auth store/session handling with backend tokens.
       onAuthenticated?.(tokens);
       navigate("/dashboard");
     },

@@ -26,7 +26,6 @@ export const isOtpRequiredResponse = (
 
 export interface VerifyLoginOtpPayload {
   email: string;
-  password: string;
   otp: string;
 }
 

@@ -1,21 +1,10 @@
 import { CardContent, CardHeader, CardTitle, LyncsCard } from "@/components/custom-components/custom-card";
+import CountryFlag from "@/components/custom-components/country-flag";
+import { getCountryNameFromIso2 } from "@/lib/country";
 
 interface CountryListProps {
   countries: { country: string; clicks: number }[];
 }
-
-const toFlagEmoji = (code: string) => {
-  try {
-    return String.fromCodePoint(
-      ...code
-        .toUpperCase()
-        .split("")
-        .map((char) => 0x1f1e6 + char.charCodeAt(0) - 65),
-    );
-  } catch {
-    return "🌐";
-  }
-};
 
 const CountryList = ({ countries }: CountryListProps) => {
   return (
@@ -32,10 +21,8 @@ const CountryList = ({ countries }: CountryListProps) => {
             className="flex items-center justify-between text-[12px] text-lyncs-text-muted"
           >
             <div className="flex items-center gap-2">
-              <span className="text-base">
-                {country.country ? toFlagEmoji(country.country) : "🌐"}
-              </span>
-              <span>{country.country || "—"}</span>
+              <CountryFlag countryCode={country.country} className="size-4" />
+              <span>{getCountryNameFromIso2(country.country, "—")}</span>
             </div>
             <span className="text-lyncs-text tabular-nums">
               {country.clicks}

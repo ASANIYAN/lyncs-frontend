@@ -3,10 +3,9 @@ import { BarChart2, ExternalLink, MousePointerClick, Trash2 } from "lucide-react
 import { LyncsCard, CardContent } from "@/components/custom-components/custom-card";
 import { LyncsBadge, ShortCodePill } from "@/components/custom-components/custom-badge";
 import { CustomButton } from "@/components/custom-components/custom-button";
+import { getShortUrl } from "@/lib/shortUrl";
 import { cn } from "@/lib/utils";
 import type { UrlRow } from "../hooks/use-urls";
-
-const SHORT_BASE = "https://lyncs-backend.onrender.com/";
 
 interface UrlCardProps {
   url: UrlRow;
@@ -15,7 +14,7 @@ interface UrlCardProps {
 }
 
 const UrlCard = ({ url, onViewAnalytics, onDelete }: UrlCardProps) => {
-  const shortUrl = `${SHORT_BASE}${url.short_code}`;
+  const shortUrl = getShortUrl(url.short_code);
 
   return (
     <LyncsCard className="rounded-xl">
