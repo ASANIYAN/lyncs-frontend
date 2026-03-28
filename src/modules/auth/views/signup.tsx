@@ -2,7 +2,7 @@ import { Link2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import AuthLayout from "@/components/layouts/auth-layout";
-import SignupForm from "@/modules/auth/components/signup-form";
+import SignupFlow from "@/modules/auth/components/signup-flow";
 
 const Signup = () => {
   return (
@@ -27,7 +27,7 @@ const Signup = () => {
           </div>
 
           <section className="bg-lyncs-card border border-lyncs-border rounded-xl p-7">
-            <SignupForm />
+            <SignupFlow />
           </section>
 
           <p className="text-center text-xs text-lyncs-text-muted pt-4">
