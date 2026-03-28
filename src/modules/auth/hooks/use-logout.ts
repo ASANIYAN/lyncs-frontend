@@ -1,30 +1,35 @@
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 
-import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
-import { authApi } from "@/services/api-service";
+import { getToken } from "@/lib/token";
+import { unauthApi } from "@/services/api-service";
 import { clearAuthSession } from "@/store/auth-store";
 
 export const useLogout = () => {
   const mutation = useMutation({
-    mutationFn: async () => {
-      await authApi.post("/auth/logout");
-    },
-    onError: (error) => {
-      const message = getApiErrorMessage(
-        error,
-        "Could not sign out from server. Ending local session.",
+    mutationFn: async (accessToken?: string) => {
+      if (!accessToken) return;
+
+      await unauthApi.post(
+        "/auth/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
       );
-      toast.error(message);
     },
-    onSettled: () => {
-      clearAuthSession();
-    },
+    retry: 0,
   });
 
+  const logout = () => {
+    const accessToken = getToken();
+    clearAuthSession();
+    mutation.mutate(accessToken);
+  };
+
   return {
-    logout: mutation.mutateAsync,
+    logout,
     isLoggingOut: mutation.isPending,
   };
 };
-

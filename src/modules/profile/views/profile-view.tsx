@@ -21,9 +21,8 @@ const ProfileView = () => {
   const { data, isLoading } = useProfile();
 
   const handleSignOut = () => {
-    logout().finally(() => {
-      navigate("/login");
-    });
+    logout();
+    navigate("/login");
   };
 
   return (

@@ -23,9 +23,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const initials = email?.[0]?.toUpperCase() ?? "U";
 
   const handleSignOut = () => {
-    logout().finally(() => {
-      navigate("/login");
-    });
+    logout();
+    navigate("/login");
   };
 
   const handleSignOutClick = () => {

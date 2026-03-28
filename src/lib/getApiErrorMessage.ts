@@ -15,6 +15,33 @@ const joinMessage = (message: string | string[]) => {
   return message;
 };
 
+const toFriendlyMessage = (message: string) => {
+  const normalized = message.trim();
+  const lower = normalized.toLowerCase();
+
+  if (
+    lower.includes("invalid or expired token") ||
+    lower.includes("jwt expired") ||
+    lower.includes("jwt malformed")
+  ) {
+    return "Your session has expired. Please sign in again.";
+  }
+
+  if (lower.includes("internal server error")) {
+    return "Something went wrong on our side. Please try again.";
+  }
+
+  if (lower.includes("validation failed")) {
+    return "Please check your input and try again.";
+  }
+
+  if (lower.includes("rate limit exceeded")) {
+    return "Too many attempts. Please wait a moment and try again.";
+  }
+
+  return normalized;
+};
+
 export const getApiErrorMessage = (
   error: unknown,
   fallback = "Something went wrong. Please try again.",
@@ -29,20 +56,19 @@ export const getApiErrorMessage = (
         payload?.statusCode === 429 &&
         typeof payload.retryAfterSeconds === "number"
       ) {
-        return `${message} Retry in ${payload.retryAfterSeconds}s.`;
+        return `${toFriendlyMessage(message)} Retry in ${payload.retryAfterSeconds}s.`;
       }
-      return message;
+      return toFriendlyMessage(message);
     }
 
     if (typeof payload?.error === "string" && payload.error.trim().length > 0) {
-      return payload.error;
+      return toFriendlyMessage(payload.error);
     }
   }
 
   if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message;
+    return toFriendlyMessage(error.message);
   }
 
   return fallback;
 };
-
