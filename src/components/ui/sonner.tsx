@@ -13,6 +13,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
+      position={props.position ?? "top-right"}
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       icons={{
@@ -30,9 +31,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--success-bg": "var(--color-lyncs-accent-dim)",
           "--success-border": "var(--color-lyncs-accent-border)",
           "--success-text": "var(--color-lyncs-accent)",
-          "--error-bg": "var(--color-lyncs-danger-dim)",
+          "--error-bg": "var(--color-lyncs-danger)",
           "--error-border": "var(--color-lyncs-danger-border)",
-          "--error-text": "var(--color-lyncs-danger)",
+          "--error-text": "var(--color-lyncs-bg)",
           "--border-radius": "var(--radius-lg)",
         } as React.CSSProperties
       }
@@ -41,9 +42,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           toast:
             "cn-toast border shadow-lg backdrop-blur-sm font-geist data-[swipe=move]:transition-none",
           success:
-            "border-lyncs-accent-border bg-lyncs-accent-dim text-lyncs-accent",
-          error:
-            "border-lyncs-danger-border bg-lyncs-danger-dim text-lyncs-danger",
+            "border-lyncs-accent-border! bg-lyncs-accent-dim! text-lyncs-accent!",
+          error: "border-lyncs-danger-borde!r bg-lyncs-danger! text-white",
           title: "text-[13px] font-medium",
           description: "text-[12px] opacity-90",
         },

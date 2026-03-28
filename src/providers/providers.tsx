@@ -34,7 +34,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
       {children}
-      <Toaster />
+      <Toaster richColors={false} />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
