@@ -1,7 +1,10 @@
 import { clearAuthSession } from "@/store/auth-store";
 import { sessionTimeoutManager } from "@/modules/system/session/session-timeout-manager";
 import { broadcastLogoutEvent } from "@/modules/system/session/session-sync";
-import { getSessionQueryClient } from "@/modules/system/session/session-runtime";
+import {
+  getSessionNavigator,
+  getSessionQueryClient,
+} from "@/modules/system/session/session-runtime";
 
 type LogoutReason =
   | "manual_logout"
@@ -42,7 +45,12 @@ export const runCentralizedLogout = ({
 
     if (shouldRedirect && typeof window !== "undefined") {
       if (window.location.pathname !== LOGIN_PATH) {
-        window.location.replace(LOGIN_PATH);
+        const navigate = getSessionNavigator();
+        if (navigate) {
+          void navigate(LOGIN_PATH, { replace: true });
+        } else {
+          window.location.replace(LOGIN_PATH);
+        }
       }
     }
   } finally {
