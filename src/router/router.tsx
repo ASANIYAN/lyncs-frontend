@@ -8,6 +8,7 @@ import DashboardLayout from "@/components/layouts/dashboard-layout";
 import UrlsView from "@/modules/urls/views/urls-view";
 import AnalyticsView from "@/modules/analytics/views/analytics-view";
 import ProfileView from "@/modules/profile/views/profile-view";
+import ShortCodeRedirectView from "@/modules/urls/views/short-code-redirect-view";
 
 const dashboardRoutes: RouteObject[] = [
   {
@@ -47,6 +48,10 @@ const unprotectedRoutes: RouteObject[] = [
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/:shortCode",
+    element: <ShortCodeRedirectView />,
   },
 ];
 

@@ -62,22 +62,13 @@ const ProfileCard = ({ profile }: ProfileCardProps) => {
           {[
             { label: "Email", value: profile.email },
             { label: "Member since", value: formatDate(profile.createdAt) },
-            { label: "Account ID", value: profile.id, mono: true },
           ].map((row) => (
             <div
               key={row.label}
               className="flex items-center justify-between py-2.5 border-b border-lyncs-border last:border-0 text-xiii"
             >
               <span className="text-lyncs-text-muted">{row.label}</span>
-              <span
-                className={
-                  row.mono
-                    ? "font-mono text-[12px] text-lyncs-text"
-                    : "text-lyncs-text"
-                }
-              >
-                {row.value}
-              </span>
+              <span className={"text-lyncs-text"}>{row.value}</span>
             </div>
           ))}
         </div>
