@@ -1,6 +1,7 @@
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type FieldError } from "react-hook-form";
+import { toast } from "sonner";
 
 import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 import { unauthApi } from "@/services/api-service";
@@ -99,16 +100,19 @@ export const useSignupForm = (): UseSignupFormReturn => {
         setPendingPayload(payload);
         setStep("otp");
         setOtpDescription(data.message);
+        toast.success(data.message);
         setOtpDialog({
           ...defaultOtpDialogState,
           isOpen: true,
           resendCooldown: RESEND_COOLDOWN_SECONDS,
         });
       } catch (error) {
+        const message = getApiErrorMessage(error, "Could not start signup flow.");
         form.setError("root", {
           type: "manual",
-          message: getApiErrorMessage(error, "Could not start signup flow."),
+          message,
         });
+        toast.error(message);
       } finally {
         setIsSubmittingCredentials(false);
       }
@@ -133,11 +137,14 @@ export const useSignupForm = (): UseSignupFormReturn => {
       setSuccessMessage(data.message);
       setStep("success");
       setOtpDialog(defaultOtpDialogState);
+      toast.success(data.message);
     } catch (error) {
+      const message = getApiErrorMessage(error, "Could not verify your OTP code.");
       setOtpDialog((prev) => ({
         ...prev,
-        otpError: getApiErrorMessage(error, "Could not verify your OTP code."),
+        otpError: message,
       }));
+      toast.error(message);
     } finally {
       setOtpDialog((prev) => ({
         ...prev,
@@ -162,15 +169,18 @@ export const useSignupForm = (): UseSignupFormReturn => {
         },
       );
       setOtpDescription(data.message);
+      toast.success(data.message);
       setOtpDialog((prev) => ({
         ...prev,
         resendCooldown: RESEND_COOLDOWN_SECONDS,
       }));
     } catch (error) {
+      const message = getApiErrorMessage(error, "Could not resend OTP now.");
       setOtpDialog((prev) => ({
         ...prev,
-        otpError: getApiErrorMessage(error, "Could not resend OTP now."),
+        otpError: message,
       }));
+      toast.error(message);
     } finally {
       setOtpDialog((prev) => ({
         ...prev,

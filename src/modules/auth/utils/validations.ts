@@ -47,6 +47,10 @@ export type ForgotPasswordRequestFormType = z.infer<
 
 export const ResetPasswordSchema = z
   .object({
+    otp: z
+      .string()
+      .min(1, "OTP code is required")
+      .regex(/^\d{6}$/, "Enter the 6-digit OTP code"),
     password: passwordSchema,
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })

@@ -1,13 +1,11 @@
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 import { unauthApi } from "@/services/api-service";
-import type {
-  ForgotPasswordFlowStep,
-  OtpDialogState,
-} from "@/modules/auth/types";
+import type { ForgotPasswordFlowStep } from "@/modules/auth/types";
 import {
   ForgotPasswordRequestSchema,
   type ForgotPasswordRequestFormType,
@@ -16,15 +14,6 @@ import {
 } from "@/modules/auth/utils/validations";
 
 const RESEND_COOLDOWN_SECONDS = 30;
-
-const defaultOtpDialogState: OtpDialogState = {
-  isOpen: false,
-  otpCode: "",
-  otpError: null,
-  isVerifying: false,
-  isResending: false,
-  resendCooldown: 0,
-};
 
 export const useForgotPasswordFlow = () => {
   const requestForm = useForm<ForgotPasswordRequestFormType>({
@@ -38,6 +27,7 @@ export const useForgotPasswordFlow = () => {
     resolver: zodResolver(ResetPasswordSchema),
     mode: "onChange",
     defaultValues: {
+      otp: "",
       password: "",
       confirmPassword: "",
     },
@@ -45,30 +35,18 @@ export const useForgotPasswordFlow = () => {
 
   const [step, setStep] = React.useState<ForgotPasswordFlowStep>("request-otp");
   const [email, setEmail] = React.useState("");
-  const [verifiedOtp, setVerifiedOtp] = React.useState("");
-  const [otpDescription, setOtpDescription] = React.useState(
-    "Enter the verification code sent to your email.",
-  );
   const [isSubmittingRequest, setIsSubmittingRequest] = React.useState(false);
   const [isSubmittingReset, setIsSubmittingReset] = React.useState(false);
-  const [otpDialog, setOtpDialog] = React.useState<OtpDialogState>(
-    defaultOtpDialogState,
-  );
+  const [isResendingOtp, setIsResendingOtp] = React.useState(false);
+  const [resendCooldown, setResendCooldown] = React.useState(0);
 
   React.useEffect(() => {
-    if (otpDialog.resendCooldown <= 0) return;
+    if (resendCooldown <= 0) return;
     const timer = window.setInterval(() => {
-      setOtpDialog((prev) => ({
-        ...prev,
-        resendCooldown: Math.max(0, prev.resendCooldown - 1),
-      }));
+      setResendCooldown((prev) => Math.max(0, prev - 1));
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [otpDialog.resendCooldown]);
-
-  const closeOtpDialog = React.useCallback(() => {
-    setOtpDialog(defaultOtpDialogState);
-  }, []);
+  }, [resendCooldown]);
 
   const handleRequestOtp = React.useCallback(
     async (values: ForgotPasswordRequestFormType) => {
@@ -81,84 +59,53 @@ export const useForgotPasswordFlow = () => {
           values,
         );
         setEmail(values.email);
-        setOtpDescription(data.message);
-        setOtpDialog({
-          ...defaultOtpDialogState,
-          isOpen: true,
-          resendCooldown: RESEND_COOLDOWN_SECONDS,
-        });
+        setStep("set-password");
+        setResendCooldown(RESEND_COOLDOWN_SECONDS);
+        resetForm.reset((prev) => ({
+          ...prev,
+          otp: "",
+        }));
+        toast.success(data.message);
       } catch (error) {
+        const message = getApiErrorMessage(error, "Could not request OTP right now.");
         requestForm.setError("root", {
           type: "manual",
-          message: getApiErrorMessage(error, "Could not request OTP right now."),
+          message,
         });
+        toast.error(message);
       } finally {
         setIsSubmittingRequest(false);
       }
     },
-    [requestForm],
+    [requestForm, resetForm],
   );
 
-  const handleVerifyOtp = React.useCallback(async () => {
-    if (!email || otpDialog.otpCode.length !== 6) return;
-
-    setOtpDialog((prev) => ({
-      ...prev,
-      isVerifying: true,
-      otpError: null,
-    }));
-
-    try {
-      setVerifiedOtp(otpDialog.otpCode);
-      setStep("set-password");
-      setOtpDialog(defaultOtpDialogState);
-    } catch (error) {
-      setOtpDialog((prev) => ({
-        ...prev,
-        otpError: getApiErrorMessage(error, "Could not verify your OTP code."),
-      }));
-    } finally {
-      setOtpDialog((prev) => ({
-        ...prev,
-        isVerifying: false,
-      }));
-    }
-  }, [email, otpDialog.otpCode]);
-
   const handleResendOtp = React.useCallback(async () => {
-    if (!email || otpDialog.resendCooldown > 0) return;
-    setOtpDialog((prev) => ({
-      ...prev,
-      isResending: true,
-      otpError: null,
-    }));
+    if (!email || resendCooldown > 0) return;
+    setIsResendingOtp(true);
 
     try {
       const { data } = await unauthApi.post<{ message: string }>(
         "/auth/forgot-password/request-otp",
         { email },
       );
-      setOtpDescription(data.message);
-      setOtpDialog((prev) => ({
-        ...prev,
-        resendCooldown: RESEND_COOLDOWN_SECONDS,
-      }));
+      toast.success(data.message);
+      setResendCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (error) {
-      setOtpDialog((prev) => ({
-        ...prev,
-        otpError: getApiErrorMessage(error, "Could not resend OTP now."),
-      }));
+      const message = getApiErrorMessage(error, "Could not resend OTP now.");
+      resetForm.setError("otp", {
+        type: "manual",
+        message,
+      });
+      toast.error(message);
     } finally {
-      setOtpDialog((prev) => ({
-        ...prev,
-        isResending: false,
-      }));
+      setIsResendingOtp(false);
     }
-  }, [email, otpDialog.resendCooldown]);
+  }, [email, resendCooldown, resetForm]);
 
   const handleResetPassword = React.useCallback(
     async (values: ResetPasswordFormType) => {
-      if (!email || !verifiedOtp) return;
+      if (!email) return;
 
       setIsSubmittingReset(true);
       resetForm.clearErrors("root");
@@ -166,20 +113,23 @@ export const useForgotPasswordFlow = () => {
       try {
         await unauthApi.post("/auth/forgot-password/confirm", {
           email,
-          otp: verifiedOtp,
+          otp: values.otp,
           newPassword: values.password,
         });
         setStep("success");
+        toast.success("Password reset successful. You can now sign in.");
       } catch (error) {
+        const message = getApiErrorMessage(error, "Could not reset password right now.");
         resetForm.setError("root", {
           type: "manual",
-          message: getApiErrorMessage(error, "Could not reset password right now."),
+          message,
         });
+        toast.error(message);
       } finally {
         setIsSubmittingReset(false);
       }
     },
-    [email, resetForm, verifiedOtp],
+    [email, resetForm],
   );
 
   return {
@@ -189,13 +139,9 @@ export const useForgotPasswordFlow = () => {
     resetForm,
     isSubmittingRequest,
     isSubmittingReset,
-    otpDialog,
-    otpTitle: "Verify reset code",
-    otpDescription,
-    setOtpDialog,
-    closeOtpDialog,
+    isResendingOtp,
+    resendCooldown,
     handleRequestOtp,
-    handleVerifyOtp,
     handleResendOtp,
     handleResetPassword,
   };

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type FieldError } from "react-hook-form";
+import { toast } from "sonner";
 
 import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 import { unauthApi } from "@/services/api-service";
@@ -97,6 +98,7 @@ export const useLoginForm = (
           setPendingPayload(values);
           setStep("otp");
           setOtpDescription(data.message);
+          toast.success(data.message);
           setOtpDialog({
             ...defaultOtpDialogState,
             isOpen: true,
@@ -110,12 +112,15 @@ export const useLoginForm = (
           email: values.email,
         });
         setStep("authenticated");
+        toast.success("Signed in successfully.");
         options?.onAuthenticated?.(data);
       } catch (error) {
+        const message = getApiErrorMessage(error, "Unable to sign in now.");
         form.setError("root", {
           type: "manual",
-          message: getApiErrorMessage(error, "Unable to sign in now."),
+          message,
         });
+        toast.error(message);
       } finally {
         setIsSubmittingCredentials(false);
       }
@@ -143,12 +148,15 @@ export const useLoginForm = (
       });
       setStep("authenticated");
       setOtpDialog(defaultOtpDialogState);
+      toast.success("Signed in successfully.");
       options?.onAuthenticated?.(data);
     } catch (error) {
+      const message = getApiErrorMessage(error, "Invalid code. Please try again.");
       setOtpDialog((prev) => ({
         ...prev,
-        otpError: getApiErrorMessage(error, "Invalid code. Please try again."),
+        otpError: message,
       }));
+      toast.error(message);
     } finally {
       setOtpDialog((prev) => ({
         ...prev,
@@ -172,6 +180,7 @@ export const useLoginForm = (
 
       if (isOtpRequiredResponse(data)) {
         setOtpDescription(data.message);
+        toast.success(data.message);
       } else {
         setAuthSession({
           ...data,
@@ -179,6 +188,7 @@ export const useLoginForm = (
         });
         setStep("authenticated");
         setOtpDialog(defaultOtpDialogState);
+        toast.success("Signed in successfully.");
         options?.onAuthenticated?.(data);
         return;
       }
@@ -188,10 +198,12 @@ export const useLoginForm = (
         resendCooldown: RESEND_COOLDOWN_SECONDS,
       }));
     } catch (error) {
+      const message = getApiErrorMessage(error, "Could not resend OTP now.");
       setOtpDialog((prev) => ({
         ...prev,
-        otpError: getApiErrorMessage(error, "Could not resend OTP now."),
+        otpError: message,
       }));
+      toast.error(message);
     } finally {
       setOtpDialog((prev) => ({
         ...prev,

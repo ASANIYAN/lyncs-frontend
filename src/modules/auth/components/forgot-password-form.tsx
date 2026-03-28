@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 import { CustomButton } from "@/components/custom-components/custom-button";
 import { CustomInput } from "@/components/custom-components/custom-input";
-import AuthOtpDialog from "@/modules/auth/components/auth-otp-dialog";
 import { useForgotPasswordFlow } from "@/modules/auth/hooks/use-forgot-password-flow";
 
 const ForgotPasswordForm = () => {
@@ -20,13 +19,9 @@ const ForgotPasswordForm = () => {
     resetForm,
     isSubmittingRequest,
     isSubmittingReset,
-    otpDialog,
-    otpTitle,
-    otpDescription,
-    setOtpDialog,
-    closeOtpDialog,
+    isResendingOtp,
+    resendCooldown,
     handleRequestOtp,
-    handleVerifyOtp,
     handleResendOtp,
     handleResetPassword,
   } = useForgotPasswordFlow();
@@ -116,6 +111,31 @@ const ForgotPasswordForm = () => {
           </div>
           <CustomInput
             control={resetForm.control}
+            name="otp"
+            label="OTP code"
+            requiredMark
+            placeholder="Enter 6-digit code"
+            type="text"
+          />
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-lyncs-text-muted">
+              {resendCooldown > 0
+                ? `Resend available in ${resendCooldown}s`
+                : "Didn't get the code?"}
+            </span>
+            <CustomButton
+              type="button"
+              variant="ghost"
+              size="sm"
+              loading={isResendingOtp}
+              onClick={handleResendOtp}
+              disabled={isSubmittingReset || isResendingOtp || resendCooldown > 0}
+            >
+              Resend code
+            </CustomButton>
+          </div>
+          <CustomInput
+            control={resetForm.control}
             name="password"
             label="New password"
             requiredMark
@@ -179,35 +199,17 @@ const ForgotPasswordForm = () => {
           >
             Reset password
           </CustomButton>
+          <CustomButton
+            type="button"
+            variant="secondary"
+            fullWidth
+            size="lg"
+            onClick={() => navigate("/login")}
+          >
+            Back to login
+          </CustomButton>
         </form>
       )}
-
-      <AuthOtpDialog
-        open={otpDialog.isOpen}
-        title={otpTitle}
-        description={otpDescription}
-        otpCode={otpDialog.otpCode}
-        otpError={otpDialog.otpError}
-        isVerifying={otpDialog.isVerifying}
-        isResending={otpDialog.isResending}
-        resendCooldown={otpDialog.resendCooldown}
-        onOpenChange={(open) => {
-          if (!open) {
-            closeOtpDialog();
-            return;
-          }
-          setOtpDialog((prev) => ({ ...prev, isOpen: open }));
-        }}
-        onOtpChange={(value) =>
-          setOtpDialog((prev) => ({
-            ...prev,
-            otpCode: value,
-            otpError: null,
-          }))
-        }
-        onVerify={handleVerifyOtp}
-        onResend={handleResendOtp}
-      />
     </>
   );
 };
