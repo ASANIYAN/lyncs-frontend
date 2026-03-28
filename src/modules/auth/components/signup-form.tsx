@@ -53,7 +53,7 @@ const SignupForm = () => {
             </h2>
             <p className="text-xiii text-lyncs-text-muted">{successMessage}</p>
           </div>
-          <div className="space-y-2">
+          <div className="">
             <CustomButton
               variant="primary"
               fullWidth
@@ -61,14 +61,6 @@ const SignupForm = () => {
               onClick={() => navigate("/login")}
             >
               Continue to sign in
-            </CustomButton>
-            <CustomButton
-              variant="secondary"
-              fullWidth
-              size="lg"
-              onClick={() => navigate("/dashboard")}
-            >
-              Go to dashboard
             </CustomButton>
           </div>
         </section>
@@ -98,7 +90,9 @@ const SignupForm = () => {
               <button
                 type="button"
                 onClick={togglePassword}
-                onKeyDown={(event) => handleToggleKeyDown(togglePassword, event)}
+                onKeyDown={(event) =>
+                  handleToggleKeyDown(togglePassword, event)
+                }
                 tabIndex={0}
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 className="focus:outline-none hover:opacity-70 transition-opacity cursor-pointer"
@@ -122,14 +116,18 @@ const SignupForm = () => {
                   handleToggleKeyDown(toggleConfirmPassword, event)
                 }
                 tabIndex={0}
-                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                aria-label={
+                  showConfirmPassword ? "Hide password" : "Show password"
+                }
                 className="focus:outline-none hover:opacity-70 transition-opacity cursor-pointer"
               >
                 {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
             }
           />
-          {rootError ? <p className="text-xs text-lyncs-danger">{rootError}</p> : null}
+          {rootError ? (
+            <p className="text-xs text-lyncs-danger">{rootError}</p>
+          ) : null}
           <CustomButton
             type="submit"
             variant="primary"
@@ -138,7 +136,7 @@ const SignupForm = () => {
             loading={isSubmittingCredentials}
             className="mt-1"
           >
-            Request OTP
+            Signup
           </CustomButton>
           <p className="text-[11.5px] text-center text-lyncs-text-muted">
             Already have a code?{" "}
