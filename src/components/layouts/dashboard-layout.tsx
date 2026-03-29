@@ -178,7 +178,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
 
         {/* Main content */}
-        <main className="min-h-dvh overflow-y-auto bg-lyncs-bg md:ml-60 mb-16 md:mb-0">
+        <main className="min-h-dvh overflow-y-auto bg-lyncs-bg md:ml-60 md:mb-0">
           {children ?? <Outlet />}
         </main>
 
