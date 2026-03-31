@@ -1,7 +1,18 @@
-import { BarChart2, ExternalLink, MousePointerClick, Trash2 } from "lucide-react";
+import {
+  BarChart2,
+  ExternalLink,
+  MousePointerClick,
+  Trash2,
+} from "lucide-react";
 
-import { LyncsCard, CardContent } from "@/components/custom-components/custom-card";
-import { LyncsBadge, ShortCodePill } from "@/components/custom-components/custom-badge";
+import {
+  LyncsCard,
+  CardContent,
+} from "@/components/custom-components/custom-card";
+import {
+  LyncsBadge,
+  ShortCodePill,
+} from "@/components/custom-components/custom-badge";
 import { CustomButton } from "@/components/custom-components/custom-button";
 import { getShortUrl } from "@/lib/shortUrl";
 import { cn } from "@/lib/utils";
@@ -21,14 +32,16 @@ const UrlCard = ({ url, onViewAnalytics, onDelete }: UrlCardProps) => {
       <CardContent className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[13px] text-lyncs-text truncate">
+            <p className="text-xiii text-lyncs-text truncate">
               {url.original_url}
             </p>
             <div className="mt-2 flex items-center gap-2">
               <ShortCodePill code={url.short_code} />
               <button
                 type="button"
-                onClick={() => window.open(shortUrl, "_blank", "noopener,noreferrer")}
+                onClick={() =>
+                  window.open(shortUrl, "_blank", "noopener,noreferrer")
+                }
                 className="text-lyncs-text-muted hover:text-lyncs-text transition-colors"
                 aria-label="Open short URL"
               >

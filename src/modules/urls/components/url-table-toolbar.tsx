@@ -26,6 +26,7 @@ const UrlTableToolbar = ({
   isRefreshing,
 }: UrlTableToolbarProps) => {
   const [localSearch, setLocalSearch] = React.useState(search);
+  const [isManualRefreshing, setIsManualRefreshing] = React.useState(false);
 
   React.useEffect(() => {
     setLocalSearch(search);
@@ -39,6 +40,17 @@ const UrlTableToolbar = ({
     return () => window.clearTimeout(timer);
   }, [localSearch, onSearchChange]);
 
+  React.useEffect(() => {
+    if (!isRefreshing) {
+      setIsManualRefreshing(false);
+    }
+  }, [isRefreshing]);
+
+  const handleRefresh = React.useCallback(() => {
+    setIsManualRefreshing(true);
+    onRefresh();
+  }, [onRefresh]);
+
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       <div className="relative w-full sm:w-56">
@@ -48,7 +60,7 @@ const UrlTableToolbar = ({
           onChange={(event) => setLocalSearch(event.target.value)}
           placeholder="Search"
           className={cn(
-            "h-[38px] w-full rounded-[--radius-md] border border-lyncs-border bg-lyncs-card pl-9 pr-3 text-[13px] text-lyncs-text-subtle outline-none",
+            "h-9.5 w-full rounded-[--radius-md] border border-lyncs-border bg-lyncs-card pl-9 pr-3 text-xiii text-lyncs-text-subtle outline-none",
             "hover:border-lyncs-border-hover focus:border-lyncs-accent",
           )}
         />
@@ -59,9 +71,9 @@ const UrlTableToolbar = ({
         onChange={(event) => onStatusChange(event.target.value)}
         className={cn(
           "bg-lyncs-card border border-lyncs-border text-lyncs-text-subtle",
-          "text-[13px] rounded-[--radius-md] px-3 py-2 outline-none cursor-pointer",
+          "text-xiii rounded-[--radius-md] px-3 py-2 outline-none cursor-pointer",
           "hover:border-lyncs-border-hover focus:border-lyncs-accent",
-          "appearance-none h-[38px]",
+          "appearance-none h-9.5",
         )}
       >
         <option value="">All</option>
@@ -71,12 +83,14 @@ const UrlTableToolbar = ({
 
       <select
         value={sortOrder}
-        onChange={(event) => onSortOrderChange(event.target.value as "ASC" | "DESC")}
+        onChange={(event) =>
+          onSortOrderChange(event.target.value as "ASC" | "DESC")
+        }
         className={cn(
           "bg-lyncs-card border border-lyncs-border text-lyncs-text-subtle",
-          "text-[13px] rounded-[--radius-md] px-3 py-2 outline-none cursor-pointer",
+          "text-xiii rounded-[--radius-md] px-3 py-2 outline-none cursor-pointer",
           "hover:border-lyncs-border-hover focus:border-lyncs-accent",
-          "appearance-none h-[38px]",
+          "appearance-none h-9.5",
         )}
       >
         <option value="DESC">Newest first</option>
@@ -87,8 +101,8 @@ const UrlTableToolbar = ({
         variant="ghost"
         size="sm"
         leftIcon={<RefreshCw className="size-4" />}
-        loading={isRefreshing}
-        onClick={onRefresh}
+        loading={isManualRefreshing}
+        onClick={handleRefresh}
       >
         Refresh
       </CustomButton>
