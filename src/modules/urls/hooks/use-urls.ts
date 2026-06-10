@@ -55,7 +55,6 @@ export const useUrls = (params: UseUrlsParams) => {
         throw new Error(message);
       }
     },
-    placeholderData: (previousData) => previousData,
   });
 
   return {

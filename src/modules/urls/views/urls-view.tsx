@@ -168,7 +168,7 @@ const UrlsView = () => {
             deletingCode: variables ?? null,
           })}
           data={data}
-          loading={isLoading}
+          loading={isLoading || isFetching}
           toolbar={() => (
             <UrlTableToolbar
               search={search}
