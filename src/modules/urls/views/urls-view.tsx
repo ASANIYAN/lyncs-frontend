@@ -83,7 +83,7 @@ const UrlsView = () => {
   }, [isSmUp]);
 
   const { data: profile } = useProfile();
-  const { data, total, last_page, isLoading, refetch, isFetching } = useUrls({
+  const { data, total, last_page, isPending, refetch, isFetching } = useUrls({
     page,
     search,
     status: status as "active" | "inactive" | "",
@@ -168,7 +168,7 @@ const UrlsView = () => {
             deletingCode: variables ?? null,
           })}
           data={data}
-          loading={isLoading || isFetching}
+          loading={isPending || isFetching}
           toolbar={() => (
             <UrlTableToolbar
               search={search}

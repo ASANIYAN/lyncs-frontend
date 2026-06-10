@@ -62,6 +62,7 @@ export const useUrls = (params: UseUrlsParams) => {
     total: query.data?.total ?? 0,
     page: query.data?.page ?? params.page,
     last_page: query.data?.last_page ?? 1,
+    isPending: query.isPending,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
