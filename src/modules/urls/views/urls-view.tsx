@@ -29,24 +29,19 @@ import { useDeleteUrl } from "../hooks/use-delete-url";
 import { useProfile } from "../../profile/hooks/use-profile";
 
 const useMediaQuery = (query: string) => {
-  const getMatch = () =>
+  const [matches, setMatches] = React.useState(() =>
     typeof window !== "undefined" && window.matchMedia
       ? window.matchMedia(query).matches
-      : false;
-
-  const [matches, setMatches] = React.useState(getMatch);
+      : false,
+  );
 
   React.useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
 
     const mediaQueryList = window.matchMedia(query);
-    const listener = (event: MediaQueryListEvent) => {
-      setMatches(event.matches);
-    };
+    const listener = (event: MediaQueryListEvent) => setMatches(event.matches);
 
-    setMatches(mediaQueryList.matches);
     mediaQueryList.addEventListener("change", listener);
-
     return () => mediaQueryList.removeEventListener("change", listener);
   }, [query]);
 
@@ -67,9 +62,6 @@ const UrlsView = () => {
   const [status, setStatus] = React.useState("");
   const [sortOrder, setSortOrder] = React.useState<"ASC" | "DESC">("DESC");
   const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null);
-  const [analyticsTarget, setAnalyticsTarget] = React.useState<string | null>(
-    null,
-  );
   const isSmUp = useMediaQuery("(min-width: 640px)");
 
   const [columnVisibility, setColumnVisibility] =
@@ -93,12 +85,29 @@ const UrlsView = () => {
 
   const { mutate: deleteUrl, isPending: isDeletePending, variables } = useDeleteUrl();
 
-  React.useEffect(() => {
-    if (analyticsTarget) {
-      navigate(`/dashboard/analytics/${analyticsTarget}`);
-      setAnalyticsTarget(null);
-    }
-  }, [analyticsTarget, navigate]);
+  const handleSearchChange = React.useCallback((val: string) => {
+    setPage(1);
+    setSearch(val);
+  }, []);
+
+  const handleStatusChange = React.useCallback((val: string) => {
+    setPage(1);
+    setStatus(val);
+  }, []);
+
+  const handleSortOrderChange = React.useCallback((val: "ASC" | "DESC") => {
+    setSortOrder(val);
+  }, []);
+
+  const columns = React.useMemo(
+    () =>
+      getUrlColumns({
+        onDelete: setDeleteTarget,
+        onViewAnalytics: (code) => navigate(`/dashboard/analytics/${code}`),
+        deletingCode: variables ?? null,
+      }),
+    [navigate, variables],
+  );
 
   React.useEffect(() => {
     if (page > last_page) {
@@ -162,27 +171,17 @@ const UrlsView = () => {
 
       <div className="mt-6">
         <DataTable
-          columns={getUrlColumns({
-            onDelete: (code) => setDeleteTarget(code),
-            onViewAnalytics: (code) => setAnalyticsTarget(code),
-            deletingCode: variables ?? null,
-          })}
+          columns={columns}
           data={data}
           loading={isUrlsPending || isFetching}
           toolbar={() => (
             <UrlTableToolbar
               search={search}
-              onSearchChange={(val) => {
-                setPage(1);
-                setSearch(val);
-              }}
+              onSearchChange={handleSearchChange}
               status={status}
-              onStatusChange={(val) => {
-                setPage(1);
-                setStatus(val);
-              }}
+              onStatusChange={handleStatusChange}
               sortOrder={sortOrder}
-              onSortOrderChange={(val) => setSortOrder(val)}
+              onSortOrderChange={handleSortOrderChange}
               onRefresh={refetch}
               isRefreshing={isFetching}
             />

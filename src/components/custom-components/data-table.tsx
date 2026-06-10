@@ -67,6 +67,8 @@ function SortIcon({ sorted }: { sorted: false | "asc" | "desc" }) {
   );
 }
 
+const SKELETON_WIDTHS = [65, 80, 55, 75, 90, 60, 70, 85];
+
 function TableSkeleton({
   columns,
   rows = 5,
@@ -85,7 +87,9 @@ function TableSkeleton({
             <TableCell key={colIdx} className="px-5 py-3.5">
               <div
                 className="h-3.5 rounded-xs bg-lyncs-elevated animate-pulse"
-                style={{ width: `${55 + Math.random() * 35}%` }}
+                style={{
+                  width: `${SKELETON_WIDTHS[(rowIdx * columns + colIdx) % SKELETON_WIDTHS.length]}%`,
+                }}
               />
             </TableCell>
           ))}
@@ -240,10 +244,6 @@ export function DataTable<TData, TValue>({
       pagination: { pageSize },
     },
   });
-
-  React.useEffect(() => {
-    table.setPageSize(pageSize);
-  }, [pageSize, table]);
 
   const hasRows = table.getRowModel().rows.length > 0;
   const isClickable = !!onRowClick;
