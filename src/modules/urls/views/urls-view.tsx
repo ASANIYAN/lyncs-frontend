@@ -83,7 +83,7 @@ const UrlsView = () => {
   }, [isSmUp]);
 
   const { data: profile } = useProfile();
-  const { data, total, last_page, isPending, refetch, isFetching } = useUrls({
+  const { data, total, last_page, isPending: isUrlsPending, refetch, isFetching } = useUrls({
     page,
     search,
     status: status as "active" | "inactive" | "",
@@ -91,7 +91,7 @@ const UrlsView = () => {
     limit: 8,
   });
 
-  const { mutate: deleteUrl, isPending, variables } = useDeleteUrl();
+  const { mutate: deleteUrl, isPending: isDeletePending, variables } = useDeleteUrl();
 
   React.useEffect(() => {
     if (analyticsTarget) {
@@ -168,7 +168,7 @@ const UrlsView = () => {
             deletingCode: variables ?? null,
           })}
           data={data}
-          loading={isPending || isFetching}
+          loading={isUrlsPending || isFetching}
           toolbar={() => (
             <UrlTableToolbar
               search={search}
@@ -226,7 +226,7 @@ const UrlsView = () => {
         shortCode={deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}
-        isPending={isPending}
+        isPending={isDeletePending}
       />
     </div>
   );
