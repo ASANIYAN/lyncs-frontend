@@ -40,9 +40,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <SessionTimeoutProvider>
-      <section className="font-geist min-h-dvh bg-lyncs-bg">
+      <section className="font-geist min-h-dvh bg-lyncs-bg md:h-dvh">
         {/* Sidebar */}
-        <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col md:border-r md:border-lyncs-border md:bg-lyncs-surface">
+        <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-72 md:flex-col md:border-r md:border-lyncs-border md:bg-lyncs-surface">
           <div className="flex items-center gap-2 px-5 py-4">
             <div className="flex size-7 items-center justify-center rounded-lg bg-lyncs-accent">
               <Link2 className="size-3.5 text-lyncs-bg" />
@@ -178,7 +178,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
 
         {/* Main content */}
-        <main className="min-h-dvh overflow-y-auto bg-lyncs-bg md:ml-60">
+        <main className="h-[calc(100dvh-3.5rem)] overflow-y-auto bg-lyncs-bg md:ml-72 md:h-dvh">
           {children ?? <Outlet />}
         </main>
 

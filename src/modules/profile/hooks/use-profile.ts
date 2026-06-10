@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 import { authApi } from "@/services/api-service";
@@ -23,7 +22,6 @@ export const useProfile = () => {
         return data;
       } catch (error) {
         const message = getApiErrorMessage(error, "Failed to load profile.");
-        toast.error(message);
         throw new Error(message);
       }
     },

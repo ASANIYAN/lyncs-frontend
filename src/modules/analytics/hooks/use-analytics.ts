@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 import { authApi } from "@/services/api-service";
@@ -39,7 +38,6 @@ export const useAnalytics = (shortCode: string, timeRange: string) => {
         return data;
       } catch (error) {
         const message = getApiErrorMessage(error, "Failed to load analytics.");
-        toast.error(message);
         throw new Error(message);
       }
     },
